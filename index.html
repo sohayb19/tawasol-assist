@@ -431,6 +431,7 @@ function render() {
         case 'parent':     app.innerHTML = renderParent(); attachParent(); break;
         case 'student':    app.innerHTML = renderStudent(); attachStudent(); break;
         case 'specialist': app.innerHTML = renderSpecialist(); attachSpecialist(); break;
+        case 'admin':      app.innerHTML = renderAdmin(); attachAdmin(); break;
       }
       updateHeaderForUser();
       break;
@@ -712,6 +713,7 @@ function renderRoleSelect(){
           {id:'parent',     i:'👨‍👩‍👧', t:'ولي الأمر',        d:'متابعة نمو الطفل، تمارين منزلية، تقارير', c:'purple'},
           {id:'student',    i:'🎓', t:'طالب',             d:'بنك الحالات، أوراق تقنية، تدريب أكاديمي', c:'amber'},
           {id:'specialist', i:'🧠', t:'أخصائي طبي',       d:'استقبال إحالات ORL/Neuro/Psy، إشراف مشترك', c:'rose'},
+          {id:'admin',      i:'👑', t:'صاحب المنصة',       d:'إحصائيات، إدارة المشتركين، المدفوعات', c:'slate'},
         ].map(r => `
           <button data-role-pick="${r.id}" class="role-card text-right bg-white rounded-2xl p-5 border-2 border-slate-100 hover:border-${r.c}-300">
             <div class="w-14 h-14 rounded-2xl bg-${r.c}-50 grid place-items-center text-3xl mb-3">${r.i}</div>
@@ -796,55 +798,125 @@ function renderSLP() {
 }
 
 /* ---- BILLING & PRICING (Algerian CIB / Edahabia) ---- */
-function renderBilling() {
-  const plans = [
-    {
-      id: 'starter', name: 'البداية', badge: 'مجاني', badgeClass: 'bg-slate-100 text-slate-700',
-      price: 0, duration: 'مفتوح', icon: '🌱', color: 'from-slate-400 to-slate-600',
-      features: [
-        { ok: true, text: '5 حالات نشطة كحد أقصى' },
-        { ok: true, text: '3 تقييمات DSM-5 شهرياً' },
-        { ok: true, text: 'مكتبة تمارين أساسية' },
-        { ok: true, text: 'دعم بالبريد الإلكتروني' },
-        { ok: false, text: 'لوحة تحكم متقدمة' },
-        { ok: false, text: 'تقارير مخصصة' },
+function renderBilling(role) {
+  role = role || State.role || 'slp';
+  // Different services per role
+  const roleConfig = {
+    slp: {
+      title: 'اشتراك الأخصائي الأرطفوني',
+      subtitle: 'فعّل الباقة الاحترافية للوصول لجميع أدوات التشخيص والعلاج',
+      icon: '🩺',
+      plans: [
+        { id: 'slp-starter', name: 'البداية', badge: 'مجاني', badgeClass: 'bg-slate-100 text-slate-700', price: 0, duration: 'مفتوح', icon: '🌱', color: 'from-slate-400 to-slate-600', features: [
+          { ok: true, text: '5 حالات نشطة كحد أقصى' },
+          { ok: true, text: '3 تقييمات DSM-5 شهرياً' },
+          { ok: true, text: 'مكتبة تمارين أساسية' },
+          { ok: false, text: 'تقارير PDF قابلة للطباعة' },
+          { ok: false, text: 'لوحة تحكم متقدمة' },
+        ]},
+        { id: 'slp-pro', name: 'الاحترافية', badge: 'الأكثر شعبية', badgeClass: 'bg-amber-100 text-amber-700', price: 4900, duration: 'شهر واحد', icon: '⭐', color: 'from-teal-500 to-cyan-600', features: [
+          { ok: true, text: 'عدد غير محدود من الحالات' },
+          { ok: true, text: 'تقييمات DSM-5/CIM-11 كاملة' },
+          { ok: true, text: 'مكتبة 200+ تمرين' },
+          { ok: true, text: 'تقارير PDF قابلة للطباعة' },
+          { ok: true, text: 'دعم فني 24/7' },
+        ]},
+        { id: 'slp-clinic', name: 'العيادة', badge: 'للعيادات', badgeClass: 'bg-rose-100 text-rose-700', price: 14900, duration: 'شهر واحد', icon: '🏥', color: 'from-indigo-500 to-purple-600', features: [
+          { ok: true, text: 'كل مميزات الاحترافية' },
+          { ok: true, text: 'حتى 5 أخصائيين في حساب واحد' },
+          { ok: true, text: 'إدارة مواعيد مشتركة' },
+          { ok: true, text: 'API للتكامل' },
+          { ok: true, text: 'مدير حساب مخصص' },
+        ]},
       ]
     },
-    {
-      id: 'pro', name: 'الاحترافية', badge: 'الأكثر شعبية', badgeClass: 'bg-amber-100 text-amber-700',
-      price: 4900, duration: 'شهر واحد', icon: '⭐', color: 'from-teal-500 to-cyan-600',
-      features: [
-        { ok: true, text: 'عدد غير محدود من الحالات' },
-        { ok: true, text: 'تقييمات DSM-5/CIM-11 كاملة' },
-        { ok: true, text: 'مكتبة تمارين شاملة + 200+ تمرين' },
-        { ok: true, text: 'تقارير PDF قابلة للطباعة' },
-        { ok: true, text: 'متابعة الأهل عبر تطبيق ولي الأمر' },
-        { ok: true, text: 'دعم فني 24/7' },
+    parent: {
+      title: 'خدمات ولي الأمر',
+      subtitle: 'اشترك لمتابعة طفلك + احجز جلسات مع الأخصائيين المعتمدين',
+      icon: '👨\u200d👩\u200d👧',
+      plans: [
+        { id: 'parent-sub', name: 'اشتراك المتابعة', badge: 'سنوي', badgeClass: 'bg-emerald-100 text-emerald-700', price: 2900, duration: '12 شهر', icon: '📋', color: 'from-purple-500 to-fuchsia-600', features: [
+          { ok: true, text: 'متابعة نمو الطفل شهرياً' },
+          { ok: true, text: 'تمارين منزلية مخصصة' },
+          { ok: true, text: 'تقارير تقدم مفصلة' },
+          { ok: true, text: 'إشعارات الجلسات' },
+        ]},
+        { id: 'parent-appt', name: 'حجز موعد مع أخصائي', badge: 'مرن', badgeClass: 'bg-amber-100 text-amber-700', price: 1500, duration: 'موعد واحد (45 د)', icon: '📅', color: 'from-rose-500 to-pink-600', features: [
+          { ok: true, text: 'اختيار الأخصائي' },
+          { ok: true, text: 'تأكيد خلال 24 ساعة' },
+          { ok: true, text: 'إمكانية الإلغاء' },
+        ]},
+        { id: 'parent-pack', name: 'باقة الـ 5 جلسات', badge: 'وفر 25%', badgeClass: 'bg-teal-100 text-teal-700', price: 5600, duration: '5 جلسات', icon: '🎁', color: 'from-teal-500 to-cyan-600', features: [
+          { ok: true, text: '5 جلسات مع نفس الأخصائي' },
+          { ok: true, text: 'خصم 25% على السعر الأصلي' },
+          { ok: true, text: 'تقرير تطور بعد كل جلسة' },
+          { ok: true, text: 'صالحة لمدة 6 أشهر' },
+        ]},
       ]
     },
-    {
-      id: 'clinic', name: 'العيادة', badge: 'للعيادات', badgeClass: 'bg-rose-100 text-rose-700',
-      price: 14900, duration: 'شهر واحد', icon: '🏥', color: 'from-indigo-500 to-purple-600',
-      features: [
-        { ok: true, text: 'كل مميزات الاحترافية' },
-        { ok: true, text: 'حتى 5 أخصائيين في نفس الحساب' },
-        { ok: true, text: 'إدارة المواعيد المشتركة' },
-        { ok: true, text: 'لوحة تحكم إدارية للمدير' },
-        { ok: true, text: 'API للتكامل مع الأنظمة' },
-        { ok: true, text: 'تدريب مخصص + مدير حساب' },
+    student: {
+      title: 'خدمات الطالب',
+      subtitle: 'اشترك للوصول لبنك الحالات والتقارير الأكاديمية الكاملة',
+      icon: '🎓',
+      plans: [
+        { id: 'stu-base', name: 'الوصول الأساسي', badge: 'أساسي', badgeClass: 'bg-slate-100 text-slate-700', price: 1500, duration: '6 أشهر', icon: '📚', color: 'from-amber-500 to-orange-600', features: [
+          { ok: true, text: 'بنك حالات (50 حالة فقط)' },
+          { ok: true, text: 'أوراق تقنية محدودة' },
+          { ok: false, text: 'تقارير أكاديمية كاملة' },
+          { ok: false, text: 'شهادة معتمدة' },
+        ]},
+        { id: 'stu-full', name: 'الوصول الكامل', badge: 'الأفضل', badgeClass: 'bg-amber-100 text-amber-700', price: 3900, duration: '12 شهر', icon: '🎓', color: 'from-amber-500 to-yellow-600', features: [
+          { ok: true, text: 'بنك حالات كامل (200+ حالة)' },
+          { ok: true, text: 'جميع الأوراق التقنية' },
+          { ok: true, text: 'تقارير أكاديمية كاملة' },
+          { ok: true, text: 'حتى 3 شهادات معتمدة' },
+        ]},
+        { id: 'stu-cert', name: 'اعتماد احترافي', badge: 'للتوظيف', badgeClass: 'bg-rose-100 text-rose-700', price: 7900, duration: 'مرة واحدة', icon: '🏅', color: 'from-rose-500 to-pink-600', features: [
+          { ok: true, text: 'جميع مميزات الوصول الكامل' },
+          { ok: true, text: 'اختبار اعتماد معتمد' },
+          { ok: true, text: 'شهادة ختم رسمي' },
+          { ok: true, text: 'إضافة للسيرة الذاتية' },
+        ]},
       ]
     },
-  ];
+    specialist: {
+      title: 'اشتراك الأخصائي الطبي',
+      subtitle: 'فعّل حسابك لاستقبال إحالات جديدة + تقارير مشتركة مع الأخصائيين الأرطفونيين',
+      icon: '🧠',
+      plans: [
+        { id: 'spc-base', name: 'الطبيب', badge: 'للأطباء', badgeClass: 'bg-rose-100 text-rose-700', price: 5900, duration: 'شهر', icon: '👨\u200d⚕️', color: 'from-rose-500 to-red-600', features: [
+          { ok: true, text: 'استقبال إحالات (50/شهر)' },
+          { ok: true, text: 'لوحة مخصصة ORL/Neuro/Psy' },
+          { ok: true, text: 'إشراف على 3 أخصائيين أرطفونيين' },
+          { ok: true, text: 'تقارير مشتركة' },
+        ]},
+        { id: 'spc-pro', name: 'الاستشاري', badge: 'للمستشفيات', badgeClass: 'bg-purple-100 text-purple-700', price: 11900, duration: 'شهر', icon: '🏛️', color: 'from-purple-500 to-indigo-600', features: [
+          { ok: true, text: 'إحالات غير محدودة' },
+          { ok: true, text: 'إشراف غير محدود' },
+          { ok: true, text: 'مؤتمرات فيديو مع الأخصائيين' },
+          { ok: true, text: 'تقارير بحثية شهرية' },
+          { ok: true, text: 'مكتبة طبية متخصصة' },
+        ]},
+      ]
+    },
+    admin: {
+      title: 'لوحة تحكم صاحب المنصة',
+      subtitle: 'إحصائيات، إدارة المشتركين، المدفوعات',
+      icon: '👑',
+      plans: []
+    }
+  };
+  const cfg = roleConfig[role] || roleConfig.slp;
 
   return `
   <section class="card p-5 mb-5">
     <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
       <div>
         <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-          <span class="text-2xl">💎</span>
-          <span>الباقات والاشتراكات</span>
+          <span class="text-2xl">${cfg.icon}</span>
+          <span>${cfg.title}</span>
         </h3>
-        <p class="text-sm text-slate-500 mt-1">ادفع بطريقة آمنة عبر النظام الجزائري: <b>بطاقة CIB</b> أو <b>البطاقة الذهبية</b></p>
+        <p class="text-sm text-slate-500 mt-1">${cfg.subtitle}</p>
       </div>
       <div class="flex items-center gap-2 text-xs">
         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold"><span>💳</span> CIB</span>
@@ -853,12 +925,12 @@ function renderBilling() {
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      ${plans.map(p => `
-        <div class="relative rounded-2xl border-2 ${p.id === 'pro' ? 'border-teal-500 shadow-lg' : 'border-slate-200'} bg-white p-5 hover:shadow-lg transition flex flex-col">
-          ${p.id === 'pro' ? '<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">⭐ موصى به</div>' : ''}
+    <div class="grid grid-cols-1 ${cfg.plans.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4">
+      ${cfg.plans.map(p => `
+        <div class="relative rounded-2xl border-2 ${p.id.includes('pro') || p.id.includes('full') || p.id.includes('pack') ? 'border-teal-500 shadow-lg' : 'border-slate-200'} bg-white p-5 hover:shadow-lg transition flex flex-col">
+          ${(p.id.includes('pro') || p.id.includes('full') || p.id.includes('pack')) ? '<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">⭐ موصى به</div>' : ''}
           <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${p.color} grid place-items-center text-2xl mb-3">${p.icon}</div>
-          <div class="flex items-center gap-2 mb-1">
+          <div class="flex items-center gap-2 mb-1 flex-wrap">
             <h4 class="font-bold text-lg text-slate-800">${p.name}</h4>
             <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${p.badgeClass}">${p.badge}</span>
           </div>
@@ -876,13 +948,10 @@ function renderBilling() {
               </li>
             `).join('')}
           </ul>
-          ${p.price === 0
-            ? `<button class="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm cursor-default">الباقة الحالية</button>`
-            : `<button onclick='openPayment(${JSON.stringify(p.id).replace(/"/g, "'")}, "${p.name}", ${p.price}, "${p.duration}")' class="w-full py-2.5 rounded-xl bg-gradient-to-l ${p.color} text-white font-bold text-sm hover:opacity-95 transition flex items-center justify-center gap-2">
-                  <span>💳</span>
-                  <span>اشترك الآن</span>
-                </button>`
-          }
+          <button onclick='openPayment("${p.id}", "${p.name}", ${p.price}, "${p.duration}", "${role}")' class="w-full py-2.5 rounded-xl bg-gradient-to-l ${p.color} text-white font-bold text-sm hover:opacity-95 transition flex items-center justify-center gap-2">
+            <span>💳</span>
+            <span>${p.price === 0 ? 'فعّل مجاناً' : 'ادفع الآن'}</span>
+          </button>
         </div>
       `).join('')}
     </div>
@@ -1933,6 +2002,7 @@ function openCaseMonitoring() {
    =========================================================== */
 function renderParent() {
   return `
+  ${renderBilling('parent')}
   <section class="mb-5">
     <div class="card p-5 gradient-purple text-white">
       <h2 class="text-2xl font-extrabold">مرحبًا، ولي الأمر</h2>
@@ -2244,6 +2314,9 @@ function attachParent() {
 function renderStudent() {
   if(!State.studentLogged) {
     return `
+    ${renderBilling('student')}
+    <section class="max-w-md mx-auto">
+    return `
     <section class="max-w-md mx-auto">
       <div class="card p-6">
         <div class="text-center mb-5">
@@ -2370,6 +2443,7 @@ function attachStudent() {
    =========================================================== */
 function renderSpecialist() {
   return `
+  ${renderBilling('specialist')}
   <section class="mb-5">
     <div class="card p-5 gradient-rose text-white">
       <h2 class="text-2xl font-extrabold">🧠 فضاء الأخصائي الطبي</h2>
@@ -2470,6 +2544,255 @@ function activateTestShare(patient) {
 }
 
 function attachSpecialist() {}
+
+/* ===========================================================
+   ADMIN (PLATFORM OWNER) DASHBOARD
+   =========================================================== */
+const AdminDB = {
+  subscribers: [
+    { id: 'sub-001', name: 'د. تومي كريمة', email: 'tommy.karima@tawasol.app', role: 'slp', plan: 'الاحترافية', status: 'pending', joined: '2026-06-09', amount: 4900 },
+    { id: 'sub-002', name: 'د. بن عمر ياسين', email: 'benamar@chu-oran.dz', role: 'specialist', plan: 'الاستشاري', status: 'active', joined: '2026-05-20', amount: 11900 },
+    { id: 'sub-003', name: 'أم أحمد بن منصور', email: 'mounira@gmail.com', role: 'parent', plan: 'باقة 5 جلسات', status: 'active', joined: '2026-06-01', amount: 5600 },
+    { id: 'sub-004', name: 'الطالب يوسف خالدي', email: 'youssef.k@univ-alger3.dz', role: 'student', plan: 'الوصول الكامل', status: 'pending', joined: '2026-06-08', amount: 3900 },
+    { id: 'sub-005', name: 'د. زهرة ميهوبي', email: 'z.mihoubi@cnrslp.dz', role: 'slp', plan: 'العيادة', status: 'active', joined: '2026-04-12', amount: 14900 },
+    { id: 'sub-006', name: 'د. رضا قاسمي', email: 'kacemi.r@chu-constantine.dz', role: 'specialist', plan: 'الطبيب', status: 'active', joined: '2026-06-02', amount: 5900 },
+    { id: 'sub-007', name: 'الطالب منال بوخريص', email: 'm.boukhris@usthb.dz', role: 'student', plan: 'الوصول الأساسي', status: 'rejected', joined: '2026-06-07', amount: 1500 },
+    { id: 'sub-008', name: 'أبو نور بلقاسم', email: 'belkacem.f@gmail.com', role: 'parent', plan: 'اشتراك المتابعة', status: 'pending', joined: '2026-06-10', amount: 2900 },
+  ],
+  payments: [
+    { id: 'TXN-LMP3X1', date: '2026-06-10 16:25', user: 'د. تومي كريمة', role: 'slp', amount: 4900, method: 'CIB', status: 'success' },
+    { id: 'TXN-AB7C2D', date: '2026-06-10 14:12', user: 'أم أحمد بن منصور', role: 'parent', amount: 5600, method: 'Edahabia', status: 'success' },
+    { id: 'TXN-99FK0M', date: '2026-06-10 11:48', user: 'د. زهرة ميهوبي', role: 'slp', amount: 14900, method: 'CIB', status: 'success' },
+    { id: 'TXN-ZQ3X7P', date: '2026-06-09 21:33', user: 'د. رضا قاسمي', role: 'specialist', amount: 5900, method: 'CIB', status: 'success' },
+    { id: 'TXN-MN4T8V', date: '2026-06-09 18:05', user: 'الطالب يوسف خالدي', role: 'student', amount: 3900, method: 'Edahabia', status: 'pending' },
+    { id: 'TXN-X1P9QR', date: '2026-06-09 09:22', user: 'أبو نور بلقاسم', role: 'parent', amount: 2900, method: 'CIB', status: 'success' },
+  ]
+};
+
+function renderAdmin() {
+  const db = AdminDB;
+  const stats = {
+    total: db.subscribers.length,
+    active: db.subscribers.filter(s => s.status === 'active').length,
+    pending: db.subscribers.filter(s => s.status === 'pending').length,
+    rejected: db.subscribers.filter(s => s.status === 'rejected').length,
+    revenue: db.payments.filter(p => p.status === 'success').reduce((a, p) => a + p.amount, 0),
+    pendingRev: db.payments.filter(p => p.status === 'pending').reduce((a, p) => a + p.amount, 0),
+  };
+  // by role
+  const byRole = {
+    slp: db.subscribers.filter(s => s.role === 'slp').length,
+    parent: db.subscribers.filter(s => s.role === 'parent').length,
+    student: db.subscribers.filter(s => s.role === 'student').length,
+    specialist: db.subscribers.filter(s => s.role === 'specialist').length,
+  };
+  // by method
+  const cibCount = db.payments.filter(p => p.method === 'CIB' && p.status === 'success').length;
+  const goldCount = db.payments.filter(p => p.method === 'Edahabia' && p.status === 'success').length;
+
+  const roleLabel = { slp: 'أخصائي', parent: 'ولي أمر', student: 'طالب', specialist: 'طبيب' };
+  const roleColor = { slp: 'teal', parent: 'purple', student: 'amber', specialist: 'rose' };
+  const statusBadge = { active: 'bg-emerald-100 text-emerald-700', pending: 'bg-amber-100 text-amber-700', rejected: 'bg-rose-100 text-rose-700' };
+  const statusText = { active: 'مفعّل', pending: 'في انتظار الموافقة', rejected: 'مرفوض' };
+
+  return `
+  <section class="mb-5">
+    <div class="card p-5 bg-gradient-to-l from-slate-800 to-slate-900 text-white">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <p class="text-sm opacity-80">مرحبًا، صاحب المنصة</p>
+          <h2 class="text-2xl font-extrabold flex items-center gap-2">👑 لوحة تحكم TawasoL.assist</h2>
+          <p class="text-sm opacity-80 mt-1">إدارة كاملة للمشتركين، المدفوعات، والإحصائيات</p>
+        </div>
+        <div class="text-left text-xs opacity-80">
+          <p>آخر تحديث: <b>${new Date().toLocaleDateString('fr-DZ')} ${new Date().toLocaleTimeString('fr-DZ', { hour: '2-digit', minute: '2-digit' })}</b></p>
+          <p>المنطقة الزمنية: UTC+1 (الجزائر)</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KPIs -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+    <div class="card p-4 border-r-4 border-teal-500">
+      <p class="text-xs text-slate-500">إجمالي الإيرادات</p>
+      <p class="text-2xl font-extrabold text-slate-800 mt-1">${stats.revenue.toLocaleString('ar-DZ')}</p>
+      <p class="text-xs text-slate-500">دج هذا الشهر</p>
+    </div>
+    <div class="card p-4 border-r-4 border-emerald-500">
+      <p class="text-xs text-slate-500">مشتركين مفعّلين</p>
+      <p class="text-2xl font-extrabold text-emerald-600 mt-1">${stats.active}</p>
+      <p class="text-xs text-slate-500">من أصل ${stats.total}</p>
+    </div>
+    <div class="card p-4 border-r-4 border-amber-500">
+      <p class="text-xs text-slate-500">في انتظار الموافقة</p>
+      <p class="text-2xl font-extrabold text-amber-600 mt-1">${stats.pending}</p>
+      <p class="text-xs text-slate-500">يحتاج مراجعة</p>
+    </div>
+    <div class="card p-4 border-r-4 border-rose-500">
+      <p class="text-xs text-slate-500">إيرادات معلقة</p>
+      <p class="text-2xl font-extrabold text-rose-600 mt-1">${stats.pendingRev.toLocaleString('ar-DZ')}</p>
+      <p class="text-xs text-slate-500">دج لم تُحصّل</p>
+    </div>
+  </div>
+
+  <!-- Subscribers by role & payment methods -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">👥 المشتركون حسب الدور</h3>
+      ${Object.entries(byRole).map(([r, n]) => {
+        const pct = Math.round(n / stats.total * 100);
+        return `
+        <div class="mb-2">
+          <div class="flex justify-between text-sm mb-1">
+            <span class="text-slate-600">${roleLabel[r]}</span>
+            <span class="font-bold text-slate-800">${n} <span class="text-xs text-slate-500">(${pct}%)</span></span>
+          </div>
+          <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+            <div class="h-full bg-${roleColor[r]}-500 rounded-full" style="width:${pct}%"></div>
+          </div>
+        </div>
+        `;
+      }).join('')}
+    </div>
+
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">💳 طرق الدفع المستخدمة</h3>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between p-3 rounded-xl pay-card-gradient text-white">
+          <div>
+            <p class="text-xs opacity-80">بطاقة CIB</p>
+            <p class="font-bold text-2xl">${cibCount}</p>
+          </div>
+          <span class="text-3xl">💳</span>
+        </div>
+        <div class="flex items-center justify-between p-3 rounded-xl edahabia-gradient text-white">
+          <div>
+            <p class="text-xs opacity-80">البطاقة الذهبية</p>
+            <p class="font-bold text-2xl">${goldCount}</p>
+          </div>
+          <span class="text-3xl">🟡</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">⚡ نشاط آخر 24 ساعة</h3>
+      <ul class="space-y-2 text-sm">
+        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span><span>تفعيل اشتراك <b>د. تومي كريمة</b> — 4,900 دج</span></li>
+        <li class="flex items-start gap-2"><span class="text-amber-500">⏳</span><span>طلب جديد من <b>أبو نور بلقاسم</b></span></li>
+        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span><span>تحصيل من <b>د. زهرة ميهوبي</b> — 14,900 دج</span></li>
+        <li class="flex items-start gap-2"><span class="text-rose-500">✕</span><span>رفض طلب <b>الطالب منال بوخريص</b></span></li>
+        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span><span>تحصيل Edahabia — 5,600 دج</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Pending Subscribers (Approve/Reject) -->
+  <section class="card p-5 mb-5">
+    <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+      <h3 class="font-bold text-lg flex items-center gap-2">📝 طلبات المشتركين (${db.subscribers.filter(s=>s.status==='pending').length})</h3>
+      <div class="flex gap-2 text-xs">
+        <span class="px-2 py-1 rounded-full bg-emerald-100 text-emerald-700">مفعّل ${stats.active}</span>
+        <span class="px-2 py-1 rounded-full bg-amber-100 text-amber-700">انتظار ${stats.pending}</span>
+        <span class="px-2 py-1 rounded-full bg-rose-100 text-rose-700">مرفوض ${stats.rejected}</span>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="text-right text-xs text-slate-500 border-b border-slate-200">
+          <tr><th class="py-2">#</th><th>الاسم</th><th>البريد</th><th>الدور</th><th>الباقة</th><th>المبلغ</th><th>التاريخ</th><th>الحالة</th><th>إجراء</th></tr>
+        </thead>
+        <tbody>
+          ${db.subscribers.map((s, i) => `
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+              <td class="py-2 text-slate-500">${i+1}</td>
+              <td class="font-semibold">${s.name}</td>
+              <td class="text-slate-500 text-xs">${s.email}</td>
+              <td><span class="px-2 py-0.5 rounded-full text-xs font-bold bg-${roleColor[s.role]}-100 text-${roleColor[s.role]}-700">${roleLabel[s.role]}</span></td>
+              <td>${s.plan}</td>
+              <td class="font-bold">${s.amount.toLocaleString('ar-DZ')} دج</td>
+              <td class="text-xs text-slate-500">${s.joined}</td>
+              <td><span class="px-2 py-0.5 rounded-full text-xs font-bold ${statusBadge[s.status]}">${statusText[s.status]}</span></td>
+              <td>
+                ${s.status === 'pending' ? `
+                  <div class="flex gap-1">
+                    <button onclick="adminApprove('${s.id}')" class="px-2 py-1 rounded-lg bg-emerald-500 text-white text-xs font-bold hover:bg-emerald-600">✅ قبول</button>
+                    <button onclick="adminReject('${s.id}')" class="px-2 py-1 rounded-lg bg-rose-500 text-white text-xs font-bold hover:bg-rose-600">✕ رفض</button>
+                  </div>
+                ` : s.status === 'active' ? `
+                  <button onclick="adminSuspend('${s.id}')" class="px-2 py-1 rounded-lg bg-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-300">⏸ إيقاف</button>
+                ` : `
+                  <span class="text-xs text-slate-400">—</span>
+                `}
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Payments Table -->
+  <section class="card p-5">
+    <h3 class="font-bold text-lg mb-3 flex items-center gap-2">🧾 سجل المدفوعات</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="text-right text-xs text-slate-500 border-b border-slate-200">
+          <tr><th class="py-2">رقم المعاملة</th><th>التاريخ</th><th>المستخدم</th><th>الدور</th><th>الوسيلة</th><th>المبلغ</th><th>الحالة</th></tr>
+        </thead>
+        <tbody>
+          ${db.payments.map(p => `
+            <tr class="border-b border-slate-100 hover:bg-slate-50">
+              <td class="py-2 font-mono text-xs text-slate-500">${p.id}</td>
+              <td class="text-xs">${p.date}</td>
+              <td class="font-semibold">${p.user}</td>
+              <td><span class="px-2 py-0.5 rounded-full text-xs font-bold bg-${roleColor[p.role]}-100 text-${roleColor[p.role]}-700">${roleLabel[p.role]}</span></td>
+              <td>
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${p.method === 'CIB' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}">
+                  ${p.method === 'CIB' ? '💳' : '🟡'} ${p.method}
+                </span>
+              </td>
+              <td class="font-bold text-emerald-600">${p.amount.toLocaleString('ar-DZ')} دج</td>
+              <td><span class="px-2 py-0.5 rounded-full text-xs font-bold ${p.status === 'success' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${p.status === 'success' ? '✓ مدفوع' : '⏳ معلق'}</span></td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  `;
+}
+
+function adminApprove(id) {
+  const s = AdminDB.subscribers.find(x => x.id === id);
+  if (s) { s.status = 'active'; render(); toast('✅ تم قبول ' + s.name); }
+}
+function adminReject(id) {
+  const s = AdminDB.subscribers.find(x => x.id === id);
+  if (s) {
+    if (confirm('هل تريد رفض طلب ' + s.name + '؟')) {
+      s.status = 'rejected';
+      render();
+      toast('❌ تم رفض ' + s.name);
+    }
+  }
+}
+function adminSuspend(id) {
+  const s = AdminDB.subscribers.find(x => x.id === id);
+  if (s) { s.status = 'pending'; render(); toast('⏸ تم إيقاف ' + s.name); }
+}
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'fixed top-5 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-4 py-2 rounded-xl shadow-lg z-[200] text-sm font-semibold scroll-fade';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+function attachAdmin() {
+  // No interactive bindings needed beyond inline onclick
+}
 
 /* ===========================================================
    MODAL
@@ -2817,22 +3140,65 @@ document.addEventListener('DOMContentLoaded', initFloatingBall);
   </div>
 </div>
 
-<!-- ============ INVOICE SUCCESS MODAL ============ -->
-<div id="invoiceModal" class="fixed inset-0 z-[55] hidden items-center justify-center p-4" style="background:rgba(15,23,42,.65);backdrop-filter:blur(4px)">
-  <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl scroll-fade text-center">
-    <div class="w-20 h-20 mx-auto rounded-full bg-emerald-100 grid place-items-center text-5xl mb-3">✅</div>
-    <h3 class="font-bold text-xl text-slate-800">تمت العملية بنجاح!</h3>
-    <p class="text-sm text-slate-500 mt-1">تم تفعيل اشتراكك على TawasoL.assist</p>
-    <div class="bg-slate-50 rounded-xl p-3 mt-4 text-right text-sm space-y-1">
-      <div class="flex justify-between"><span class="text-slate-500">رقم الفاتورة:</span><span class="font-bold" id="okInvNum">—</span></div>
-      <div class="flex justify-between"><span class="text-slate-500">المبلغ:</span><span class="font-bold text-emerald-600" id="okInvAmount">—</span></div>
-      <div class="flex justify-between"><span class="text-slate-500">الوسيلة:</span><span class="font-bold" id="okInvMethod">—</span></div>
+<!-- ============ INVOICE SUCCESS MODAL (تم تأكيد الدفع) ============ -->
+<div id="invoiceModal" class="fixed inset-0 z-[55] hidden items-center justify-center p-4 overflow-y-auto" style="background:rgba(15,23,42,.7);backdrop-filter:blur(6px)">
+  <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl scroll-fade overflow-hidden my-8">
+    <!-- Hero header with success animation -->
+    <div class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-6 text-center relative overflow-hidden">
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-2 right-4 text-6xl">✓</div>
+        <div class="absolute bottom-2 left-4 text-6xl">✓</div>
+      </div>
+      <div class="relative">
+        <div class="w-20 h-20 mx-auto rounded-full bg-white/20 grid place-items-center text-5xl mb-3 ring-4 ring-white/30 animate-bounce">✅</div>
+        <h3 class="font-extrabold text-2xl">تم تأكيد الدفع بنجاح!</h3>
+        <p class="text-sm text-emerald-50 mt-1">شكراً لاختياركم TawasoL.assist</p>
+      </div>
     </div>
-    <div class="flex gap-2 mt-5">
-      <button onclick="printInvoice()" class="flex-1 gradient-teal text-white py-2.5 rounded-xl font-bold flex items-center justify-center gap-1">
-        <span>🖨️</span><span>طباعة الفاتورة</span>
-      </button>
-      <button onclick="closeInvoiceModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold">إغلاق</button>
+
+    <div class="p-6">
+      <p class="text-center text-sm text-slate-600 mb-4">تم تفعيل الخدمة التالية في حسابك:</p>
+
+      <!-- Service activated -->
+      <div class="bg-gradient-to-l from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-4 mb-4 flex items-center gap-3">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 grid place-items-center text-2xl text-white" id="okServiceIcon">⭐</div>
+        <div>
+          <p class="text-xs text-teal-700 font-bold" id="okServiceType">باقة الاشتراك</p>
+          <p class="font-bold text-slate-800" id="okServiceName">الاحترافية</p>
+          <p class="text-xs text-slate-500" id="okServiceDuration">شهر واحد</p>
+        </div>
+      </div>
+
+      <!-- Transaction details -->
+      <div class="bg-slate-50 rounded-xl p-4 text-sm space-y-2">
+        <div class="flex justify-between"><span class="text-slate-500">رقم الفاتورة:</span><span class="font-bold font-mono text-xs" id="okInvNum">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">رقم المعاملة:</span><span class="font-mono text-xs" id="okOrderId">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">التاريخ والوقت:</span><span class="font-semibold text-xs" id="okDate">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">وسيلة الدفع:</span><span class="font-bold" id="okInvMethod">—</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">البطاقة:</span><span class="font-mono text-xs" id="okCardMasked">**** 0000</span></div>
+        <div class="border-t border-slate-200 pt-2 flex justify-between items-center">
+          <span class="text-slate-700 font-bold">المبلغ المدفوع:</span>
+          <span class="font-extrabold text-2xl text-emerald-600" id="okInvAmount">—</span>
+        </div>
+      </div>
+
+      <!-- Email confirmation -->
+      <div class="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-start gap-2 text-xs text-blue-800">
+        <span class="text-base">📧</span>
+        <div>
+          <p class="font-bold">تم إرسال نسخة من الفاتورة إلى بريدك الإلكتروني.</p>
+          <p class="text-blue-700 mt-0.5">ستصلك أيضاً إشعارات بالتجديد التلقائي قبل 7 أيام من انتهاء الباقة.</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="flex gap-2 mt-5">
+        <button onclick="printInvoice()" class="flex-1 gradient-teal text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 hover:opacity-95 transition">
+          <span>🖨️</span><span>طباعة / PDF</span>
+        </button>
+        <button onclick="closeInvoiceModal()" class="flex-1 bg-slate-100 text-slate-700 py-3 rounded-xl font-bold hover:bg-slate-200 transition">تم</button>
+      </div>
+      <button onclick="downloadInvoiceJson()" class="w-full mt-2 text-xs text-slate-500 hover:text-slate-700 py-2">📥 تنزيل الفاتورة كملف JSON</button>
     </div>
   </div>
 </div>
@@ -2847,9 +3213,10 @@ const Payment = {
   invoiceCounter: 1000,
 };
 
-function openPayment(planId, planName, amount, duration) {
+function openPayment(planId, planName, amount, duration, role) {
   Payment.plan = { id: planId, name: planName, duration: duration };
   Payment.amount = amount;
+  Payment.role = role || (window.State && State.role) || 'slp';
   document.getElementById('payPlanLabel').textContent = planName;
   document.getElementById('payPlanDuration').textContent = duration;
   document.getElementById('payAmount').innerHTML = amount.toLocaleString('ar-DZ') + ' <span class="text-sm">دج</span>';
@@ -2975,6 +3342,10 @@ function finalizePayment() {
   const fee = Math.round(Payment.amount * 0.01);
   const subtotal = Payment.amount - tva - fee;
 
+  // Service icon by role
+  const roleIcons = { slp: '🩺', parent: '👨\u200d👩\u200d👧', student: '🎓', specialist: '🧠' };
+  const roleLabels = { slp: 'اشتراك الأخصائي الأرطفوني', parent: 'خدمات ولي الأمر', student: 'اشتراك الطالب', specialist: 'اشتراك الأخصائي الطبي' };
+
   // Fill invoice
   document.getElementById('invNumber').textContent = invNum;
   document.getElementById('invDate').textContent = dateStr;
@@ -2993,11 +3364,32 @@ function finalizePayment() {
   document.getElementById('invFee').textContent = fee.toLocaleString('ar-DZ') + ' دج';
   document.getElementById('invTotal').textContent = Payment.amount.toLocaleString('ar-DZ') + ' دج';
 
-  // Show success modal
+  // Show success modal (تم تأكيد الدفع)
   document.getElementById('okInvNum').textContent = invNum;
+  document.getElementById('okOrderId').textContent = orderId;
+  document.getElementById('okDate').textContent = dateStr;
   document.getElementById('okInvAmount').textContent = Payment.amount.toLocaleString('ar-DZ') + ' دج';
-  document.getElementById('okInvMethod').textContent = methodName;
+  document.getElementById('okInvMethod').textContent = methodName + ' — ' + methodIssuer;
+  document.getElementById('okCardMasked').textContent = masked;
+  document.getElementById('okServiceName').textContent = Payment.plan.name;
+  document.getElementById('okServiceDuration').textContent = Payment.plan.duration;
+  document.getElementById('okServiceType').textContent = (roleLabels[Payment.role] || 'اشتراك');
+  document.getElementById('okServiceIcon').textContent = roleIcons[Payment.role] || '⭐';
   document.getElementById('invoiceContainer').classList.remove('hidden');
+
+  // Save to AdminDB.payments for admin to see
+  if (window.AdminDB) {
+    AdminDB.payments.unshift({
+      id: orderId,
+      date: now.toISOString().slice(0, 16).replace('T', ' '),
+      user: (window.State && State.user && State.user.name) || 'د. تومي كريمة',
+      role: Payment.role || 'slp',
+      amount: Payment.amount,
+      method: Payment.method === 'cib' ? 'CIB' : 'Edahabia',
+      status: 'success'
+    });
+  }
+
   const im = document.getElementById('invoiceModal');
   im.classList.remove('hidden');
   im.classList.add('flex');
@@ -3005,6 +3397,24 @@ function finalizePayment() {
 
 function printInvoice() {
   window.print();
+}
+
+function downloadInvoiceJson() {
+  const data = {
+    invoice: document.getElementById('invNumber').textContent,
+    order: document.getElementById('invOrderId').textContent,
+    date: document.getElementById('invDate').textContent,
+    client: document.getElementById('invClientName').textContent,
+    method: document.getElementById('invPayMethod').textContent,
+    total: document.getElementById('invTotal').textContent,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = data.invoice + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function closeInvoiceModal() {
