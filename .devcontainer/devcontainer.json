@@ -1,0 +1,23 @@
+{
+  "name": "TawasoL.assist",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ritwickdey.liveserver",
+        "formulahendry.auto-rename-tag"
+      ],
+      "settings": {
+        "liveServer.settings.port": 5500,
+        "liveServer.settings.host": "0.0.0.0"
+      }
+    }
+  },
+  "portsAttributes": {
+    "5500": {
+      "label": "Live Preview",
+      "onAutoForward": "openBrowserOnce"
+    }
+  },
+  "forwardPorts": [5500]
+}
