@@ -48,6 +48,35 @@
   .aac-btn:hover{transform:translateY(-2px);box-shadow:0 6px 14px -4px rgba(99,102,241,.4)}
   details>summary{list-style:none;cursor:pointer}
   details>summary::-webkit-details-marker{display:none}
+
+  /* ---- PAYMENT & INVOICE ---- */
+  .pay-card-gradient{background:linear-gradient(135deg,#0c4a6e 0%,#0369a1 50%,#0284c7 100%)}
+  .edahabia-gradient{background:linear-gradient(135deg,#f59e0b 0%,#d97706 50%,#b45309 100%)}
+  .cib-chip{width:42px;height:32px;background:linear-gradient(135deg,#fbbf24,#d97706);border-radius:6px;position:relative}
+  .cib-chip::before,.cib-chip::after{content:'';position:absolute;inset:6px 4px;border-radius:2px}
+  .cib-chip::before{background:linear-gradient(90deg,transparent 40%,rgba(0,0,0,.4) 50%,transparent 60%)}
+  .pay-input{transition:all .2s;font-family:'Cairo',monospace;letter-spacing:.05em}
+  .pay-input:focus{border-color:#0ea5a4;box-shadow:0 0 0 3px rgba(14,165,164,.15)}
+  .pay-option{cursor:pointer;transition:all .2s;border:2px solid #e2e8f0}
+  .pay-option:hover{border-color:#94a3b8;transform:translateY(-2px);box-shadow:0 8px 20px -8px rgba(0,0,0,.15)}
+  .pay-option.selected{border-color:#0ea5a4;box-shadow:0 0 0 4px rgba(14,165,164,.15)}
+  .pay-option.selected.cib-selected{border-color:#0369a1;box-shadow:0 0 0 4px rgba(3,105,161,.15)}
+  .pay-option.selected.gold-selected{border-color:#d97706;box-shadow:0 0 0 4px rgba(217,119,6,.15)}
+  .processing-dots::after{content:'';animation:dots 1.5s infinite}
+  @keyframes dots{0%,20%{content:'.'}40%{content:'..'}60%,100%{content:'...'}}
+
+  /* ---- PRINT INVOICE ---- */
+  @media print {
+    body * { visibility: hidden; }
+    #invoicePrint, #invoicePrint * { visibility: visible; }
+    #invoicePrint { position: absolute; left: 0; top: 0; width: 100%; }
+    .no-print { display: none !important; }
+  }
+  .invoice-paper{background:#fff;color:#000;font-family:'Cairo',sans-serif}
+  .invoice-paper *{color:#000}
+  .invoice-table{border-collapse:collapse;width:100%}
+  .invoice-table th,.invoice-table td{border:1px solid #cbd5e1;padding:8px 12px;text-align:right}
+  .invoice-table th{background:#f1f5f9;font-weight:700}
   .tab-active{background:#0ea5a4;color:#fff}
   .badge{font-size:.7rem;padding:.15rem .5rem;border-radius:9999px;font-weight:700}
   input[type=range]{accent-color:#0ea5a4}
@@ -741,6 +770,8 @@ function renderSLP() {
     </div>
   </section>
 
+  ${renderBilling()}
+
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
     <!-- LEFT: disorders & tests & wizard -->
@@ -761,6 +792,108 @@ function renderSLP() {
       ${renderCaseMonitoring()}
     </div>
   </div>
+  `;
+}
+
+/* ---- BILLING & PRICING (Algerian CIB / Edahabia) ---- */
+function renderBilling() {
+  const plans = [
+    {
+      id: 'starter', name: 'البداية', badge: 'مجاني', badgeClass: 'bg-slate-100 text-slate-700',
+      price: 0, duration: 'مفتوح', icon: '🌱', color: 'from-slate-400 to-slate-600',
+      features: [
+        { ok: true, text: '5 حالات نشطة كحد أقصى' },
+        { ok: true, text: '3 تقييمات DSM-5 شهرياً' },
+        { ok: true, text: 'مكتبة تمارين أساسية' },
+        { ok: true, text: 'دعم بالبريد الإلكتروني' },
+        { ok: false, text: 'لوحة تحكم متقدمة' },
+        { ok: false, text: 'تقارير مخصصة' },
+      ]
+    },
+    {
+      id: 'pro', name: 'الاحترافية', badge: 'الأكثر شعبية', badgeClass: 'bg-amber-100 text-amber-700',
+      price: 4900, duration: 'شهر واحد', icon: '⭐', color: 'from-teal-500 to-cyan-600',
+      features: [
+        { ok: true, text: 'عدد غير محدود من الحالات' },
+        { ok: true, text: 'تقييمات DSM-5/CIM-11 كاملة' },
+        { ok: true, text: 'مكتبة تمارين شاملة + 200+ تمرين' },
+        { ok: true, text: 'تقارير PDF قابلة للطباعة' },
+        { ok: true, text: 'متابعة الأهل عبر تطبيق ولي الأمر' },
+        { ok: true, text: 'دعم فني 24/7' },
+      ]
+    },
+    {
+      id: 'clinic', name: 'العيادة', badge: 'للعيادات', badgeClass: 'bg-rose-100 text-rose-700',
+      price: 14900, duration: 'شهر واحد', icon: '🏥', color: 'from-indigo-500 to-purple-600',
+      features: [
+        { ok: true, text: 'كل مميزات الاحترافية' },
+        { ok: true, text: 'حتى 5 أخصائيين في نفس الحساب' },
+        { ok: true, text: 'إدارة المواعيد المشتركة' },
+        { ok: true, text: 'لوحة تحكم إدارية للمدير' },
+        { ok: true, text: 'API للتكامل مع الأنظمة' },
+        { ok: true, text: 'تدريب مخصص + مدير حساب' },
+      ]
+    },
+  ];
+
+  return `
+  <section class="card p-5 mb-5">
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+          <span class="text-2xl">💎</span>
+          <span>الباقات والاشتراكات</span>
+        </h3>
+        <p class="text-sm text-slate-500 mt-1">ادفع بطريقة آمنة عبر النظام الجزائري: <b>بطاقة CIB</b> أو <b>البطاقة الذهبية</b></p>
+      </div>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold"><span>💳</span> CIB</span>
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-50 text-amber-700 font-semibold"><span>🟡</span> الذهبية</span>
+        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold"><span>🔒</span> SSL</span>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      ${plans.map(p => `
+        <div class="relative rounded-2xl border-2 ${p.id === 'pro' ? 'border-teal-500 shadow-lg' : 'border-slate-200'} bg-white p-5 hover:shadow-lg transition flex flex-col">
+          ${p.id === 'pro' ? '<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">⭐ موصى به</div>' : ''}
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${p.color} grid place-items-center text-2xl mb-3">${p.icon}</div>
+          <div class="flex items-center gap-2 mb-1">
+            <h4 class="font-bold text-lg text-slate-800">${p.name}</h4>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${p.badgeClass}">${p.badge}</span>
+          </div>
+          <div class="mb-4">
+            ${p.price === 0
+              ? `<div class="text-3xl font-extrabold text-slate-700">مجاناً</div><div class="text-xs text-slate-500">للأبد</div>`
+              : `<div class="text-3xl font-extrabold text-slate-800">${p.price.toLocaleString('ar-DZ')} <span class="text-sm text-slate-500">دج</span></div><div class="text-xs text-slate-500">${p.duration}</div>`
+            }
+          </div>
+          <ul class="space-y-2 mb-5 text-sm flex-1">
+            ${p.features.map(f => `
+              <li class="flex items-start gap-2">
+                <span class="${f.ok ? 'text-emerald-500' : 'text-slate-300'} mt-0.5">${f.ok ? '✓' : '○'}</span>
+                <span class="${f.ok ? 'text-slate-700' : 'text-slate-400 line-through'}">${f.text}</span>
+              </li>
+            `).join('')}
+          </ul>
+          ${p.price === 0
+            ? `<button class="w-full py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm cursor-default">الباقة الحالية</button>`
+            : `<button onclick='openPayment(${JSON.stringify(p.id).replace(/"/g, "'")}, "${p.name}", ${p.price}, "${p.duration}")' class="w-full py-2.5 rounded-xl bg-gradient-to-l ${p.color} text-white font-bold text-sm hover:opacity-95 transition flex items-center justify-center gap-2">
+                  <span>💳</span>
+                  <span>اشترك الآن</span>
+                </button>`
+          }
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="mt-5 bg-slate-50 rounded-xl p-4 flex flex-wrap items-center gap-4 text-xs text-slate-600">
+      <div class="flex items-center gap-1"><span>🔒</span><span>معاملات مشفّرة 256-bit SSL</span></div>
+      <div class="flex items-center gap-1"><span>🏛️</span><span>معتمدة من SATIM / GIE Monétique</span></div>
+      <div class="flex items-center gap-1"><span>🔁</span><span>إلغاء في أي وقت</span></div>
+      <div class="flex items-center gap-1"><span>🧾</span><span>فاتورة رسمية + TVA 19%</span></div>
+    </div>
+  </section>
   `;
 }
 
@@ -2468,6 +2601,419 @@ function initFloatingBall() {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', initFloatingBall); 
+</script>
+
+<!-- ============ PAYMENT MODAL (CIB / EDAHABIA) ============ -->
+<div id="paymentModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background:rgba(15,23,42,.6);backdrop-filter:blur(4px)">
+  <div class="bg-white rounded-2xl max-w-md w-full max-h-[92vh] overflow-y-auto shadow-2xl scroll-fade">
+    <div class="bg-gradient-to-l from-teal-600 to-cyan-700 text-white p-5 rounded-t-2xl flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">💳</span>
+        <div>
+          <h3 class="font-bold text-lg" id="payTitle">إتمام عملية الدفع</h3>
+          <p class="text-xs text-teal-100">بوابة الدفع الجزائرية الآمنة</p>
+        </div>
+      </div>
+      <button onclick="closePayment()" class="text-white hover:bg-white/20 w-8 h-8 rounded-full grid place-items-center text-xl">×</button>
+    </div>
+
+    <div class="p-5" id="payBody">
+      <!-- Order Summary -->
+      <div class="bg-slate-50 rounded-xl p-4 mb-4 border border-slate-200">
+        <div class="flex justify-between text-sm mb-2">
+          <span class="text-slate-600" id="payPlanName">الباقة المختارة</span>
+          <span class="font-bold text-slate-800" id="payPlanLabel">—</span>
+        </div>
+        <div class="flex justify-between text-xs text-slate-500 mb-3">
+          <span>المدة</span>
+          <span id="payPlanDuration">شهر واحد</span>
+        </div>
+        <div class="border-t border-slate-200 pt-2 flex justify-between items-center">
+          <span class="font-bold text-slate-700">المجموع</span>
+          <span class="text-2xl font-extrabold text-teal-600" id="payAmount">0 <span class="text-sm">دج</span></span>
+        </div>
+      </div>
+
+      <!-- Payment Method Selection -->
+      <p class="text-sm font-semibold text-slate-700 mb-2">اختر طريقة الدفع</p>
+      <div class="grid grid-cols-2 gap-3 mb-4">
+        <div id="optCIB" onclick="selectPayMethod('cib')" class="pay-option rounded-xl p-3 selected cib-selected bg-white">
+          <div class="pay-card-gradient rounded-lg p-3 mb-2 text-white relative overflow-hidden">
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-xs font-bold tracking-wider">CIB</span>
+              <div class="cib-chip"></div>
+            </div>
+            <p class="text-xs opacity-80">بطاقة الدفع</p>
+            <p class="text-sm font-mono tracking-widest" id="cibPreview">**** **** **** 0000</p>
+          </div>
+          <p class="text-center text-xs font-semibold text-slate-700">بطاقة CIB</p>
+        </div>
+
+        <div id="optGOLD" onclick="selectPayMethod('gold')" class="pay-option rounded-xl p-3 bg-white">
+          <div class="edahabia-gradient rounded-lg p-3 mb-2 text-white relative overflow-hidden">
+            <div class="flex justify-between items-start mb-6">
+              <span class="text-xs font-bold tracking-wider">الذهبية</span>
+              <div class="w-9 h-7 rounded bg-gradient-to-br from-amber-200 to-amber-700 grid place-items-center text-amber-900 text-xs font-bold">ED</div>
+            </div>
+            <p class="text-xs opacity-80">البطاقة الذهبية</p>
+            <p class="text-sm font-mono tracking-widest" id="goldPreview">**** **** **** 0000</p>
+          </div>
+          <p class="text-center text-xs font-semibold text-slate-700">البطاقة الذهبية</p>
+        </div>
+      </div>
+
+      <!-- Card Form -->
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs font-semibold text-slate-600 mb-1 block">رقم البطاقة</label>
+          <input id="cardNumber" type="text" maxlength="19" placeholder="0000 0000 0000 0000" oninput="formatCardNumber(this)" class="pay-input w-full px-3 py-2.5 rounded-lg border border-slate-200 outline-none" />
+        </div>
+        <div>
+          <label class="text-xs font-semibold text-slate-600 mb-1 block">الاسم على البطاقة</label>
+          <input id="cardName" type="text" placeholder="KARIM TOUMI" class="pay-input w-full px-3 py-2.5 rounded-lg border border-slate-200 outline-none" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-semibold text-slate-600 mb-1 block">تاريخ الانتهاء</label>
+            <input id="cardExpiry" type="text" maxlength="5" placeholder="MM/YY" oninput="formatExpiry(this)" class="pay-input w-full px-3 py-2.5 rounded-lg border border-slate-200 outline-none" />
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-600 mb-1 block">CVV</label>
+            <input id="cardCvv" type="password" maxlength="3" placeholder="•••" class="pay-input w-full px-3 py-2.5 rounded-lg border border-slate-200 outline-none" />
+          </div>
+        </div>
+      </div>
+
+      <!-- 3D Secure simulation -->
+      <div id="secure3d" class="mt-4 bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2 text-xs text-amber-800">
+        <span class="text-base">🔐</span>
+        <span>سيتم التحقق عبر بروتوكول <b>3D Secure</b> (محاكاة)</span>
+      </div>
+
+      <!-- Error message -->
+      <div id="payError" class="hidden mt-3 bg-rose-50 border border-rose-200 rounded-lg p-3 text-xs text-rose-700"></div>
+
+      <button id="paySubmit" onclick="processPayment()" class="w-full mt-5 gradient-teal text-white py-3 rounded-xl font-bold hover:opacity-95 transition flex items-center justify-center gap-2">
+        <span>تأكيد الدفع</span>
+        <span id="payAmount2" class="text-teal-100">0 دج</span>
+      </button>
+
+      <div class="mt-3 flex items-center justify-center gap-3 text-[10px] text-slate-400">
+        <span>🔒 معاملات مشفّرة SSL</span>
+        <span>•</span>
+        <span>Satim / GIE Monétique</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3D SECURE OTP MODAL ============ -->
+<div id="otpModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4" style="background:rgba(15,23,42,.7);backdrop-filter:blur(4px)">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl scroll-fade">
+    <div class="text-center mb-4">
+      <div class="w-16 h-16 mx-auto rounded-full gradient-teal grid place-items-center text-3xl mb-3">🔐</div>
+      <h3 class="font-bold text-lg text-slate-800">التحقق من الهوية</h3>
+      <p class="text-sm text-slate-500 mt-1">أدخل الرمز السري المرسل إلى هاتفك</p>
+      <p class="text-xs text-slate-400 mt-1" id="otpPhone">**** **** 0770</p>
+    </div>
+    <div class="flex gap-2 justify-center mb-4" dir="ltr">
+      <input type="text" maxlength="1" class="otp-box w-12 h-14 text-center text-2xl font-bold border-2 border-slate-200 rounded-lg focus:border-teal-500 outline-none" />
+      <input type="text" maxlength="1" class="otp-box w-12 h-14 text-center text-2xl font-bold border-2 border-slate-200 rounded-lg focus:border-teal-500 outline-none" />
+      <input type="text" maxlength="1" class="otp-box w-12 h-14 text-center text-2xl font-bold border-2 border-slate-200 rounded-lg focus:border-teal-500 outline-none" />
+      <input type="text" maxlength="1" class="otp-box w-12 h-14 text-center text-2xl font-bold border-2 border-slate-200 rounded-lg focus:border-teal-500 outline-none" />
+      <input type="text" maxlength="1" class="otp-box w-12 h-14 text-center text-2xl font-bold border-2 border-slate-200 rounded-lg focus:border-teal-500 outline-none" />
+      <input type="text" maxlength="1" class="otp-box w-12 h-14 text-center text-2xl font-bold border-2 border-slate-200 rounded-lg focus:border-teal-500 outline-none" />
+    </div>
+    <button onclick="verifyOtp()" class="w-full gradient-teal text-white py-2.5 rounded-xl font-bold">تأكيد</button>
+    <p class="text-center text-xs text-slate-400 mt-3">💡 الرمز التجريبي: <b>123456</b></p>
+  </div>
+</div>
+
+<!-- ============ INVOICE CONTAINER (PRINTABLE) ============ -->
+<div id="invoiceContainer" class="hidden">
+  <div id="invoicePrint" class="invoice-paper p-8 max-w-2xl mx-auto">
+    <div class="flex justify-between items-start border-b-2 border-teal-700 pb-4 mb-4">
+      <div>
+        <h1 class="text-2xl font-extrabold text-teal-700">TawasoL.assist</h1>
+        <p class="text-xs text-slate-600">منصة الأخصائي الأرطفوني</p>
+        <p class="text-xs text-slate-500 mt-2">البريد: contact@tawasol.app</p>
+        <p class="text-xs text-slate-500">الهاتف: +213 770 123 456</p>
+        <p class="text-xs text-slate-500">العنوان: الجزائر العاصمة، حي المعادي</p>
+        <p class="text-xs text-slate-500">السجل التجاري: 16/00-1234567 B 21</p>
+        <p class="text-xs text-slate-500">المعرف الجبائي (NIF): 001216012345678</p>
+      </div>
+      <div class="text-left">
+        <h2 class="text-3xl font-extrabold text-slate-700">فاتورة</h2>
+        <p class="text-sm text-slate-600" id="invNumber">INV-2026-00001</p>
+        <p class="text-xs text-slate-500 mt-1">التاريخ: <span id="invDate">10/06/2026</span></p>
+        <p class="text-xs text-slate-500">رقم الطلب: <span id="invOrderId">—</span></p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="bg-slate-50 p-3 rounded">
+        <p class="text-xs font-bold text-slate-500 mb-1">الفاتورة لـ:</p>
+        <p class="font-bold text-sm" id="invClientName">—</p>
+        <p class="text-xs text-slate-600" id="invClientEmail">—</p>
+        <p class="text-xs text-slate-500" id="invClientAddress">—</p>
+      </div>
+      <div class="bg-slate-50 p-3 rounded">
+        <p class="text-xs font-bold text-slate-500 mb-1">طريقة الدفع:</p>
+        <p class="font-bold text-sm" id="invPayMethod">—</p>
+        <p class="text-xs text-slate-600" id="invPayDetail">—</p>
+        <p class="text-xs text-slate-500" id="invPayDate">—</p>
+      </div>
+    </div>
+
+    <table class="invoice-table mb-4">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>الوصف</th>
+          <th>الكمية</th>
+          <th>المدة</th>
+          <th>المبلغ (دج)</th>
+        </tr>
+      </thead>
+      <tbody id="invItems">
+        <tr>
+          <td>1</td>
+          <td id="invDesc">اشتراك الباقة الاحترافية</td>
+          <td>1</td>
+          <td id="invDuration">شهر</td>
+          <td id="invSubtotal">0</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="flex justify-end mb-6">
+      <div class="w-64">
+        <div class="flex justify-between py-1 text-sm">
+          <span class="text-slate-600">المجموع الفرعي:</span>
+          <span id="invSubtotal2" class="font-semibold">0 دج</span>
+        </div>
+        <div class="flex justify-between py-1 text-sm">
+          <span class="text-slate-600">TVA (19%):</span>
+          <span id="invTva" class="font-semibold">0 دج</span>
+        </div>
+        <div class="flex justify-between py-1 text-sm">
+          <span class="text-slate-600">رسوم المعاملة:</span>
+          <span id="invFee" class="font-semibold">0 دج</span>
+        </div>
+        <div class="flex justify-between py-2 border-t-2 border-slate-700 mt-1 text-lg font-extrabold">
+          <span>الإجمالي:</span>
+          <span id="invTotal" class="text-teal-700">0 دج</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-300 pt-4 text-xs text-slate-500">
+      <p class="font-bold mb-1">شروط وأحكام:</p>
+      <p>• الفاتورة مدفوعة بالكامل عبر الوسيلة المذكورة أعلاه.</p>
+      <p>• الاشتراك قابل للإلغاء في أي وقت، ويستمر حتى نهاية فترة الفوترة الحالية.</p>
+      <p>• في حالة الاسترداد، يُرجى التواصل مع خدمة العملاء خلال 14 يوماً.</p>
+      <p class="mt-2 text-center text-[10px] text-slate-400">شكراً لاختياركم TawasoL.assist — تم إصدار هذه الفاتورة إلكترونياً وهي صالحة بدون توقيع.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============ INVOICE SUCCESS MODAL ============ -->
+<div id="invoiceModal" class="fixed inset-0 z-[55] hidden items-center justify-center p-4" style="background:rgba(15,23,42,.65);backdrop-filter:blur(4px)">
+  <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl scroll-fade text-center">
+    <div class="w-20 h-20 mx-auto rounded-full bg-emerald-100 grid place-items-center text-5xl mb-3">✅</div>
+    <h3 class="font-bold text-xl text-slate-800">تمت العملية بنجاح!</h3>
+    <p class="text-sm text-slate-500 mt-1">تم تفعيل اشتراكك على TawasoL.assist</p>
+    <div class="bg-slate-50 rounded-xl p-3 mt-4 text-right text-sm space-y-1">
+      <div class="flex justify-between"><span class="text-slate-500">رقم الفاتورة:</span><span class="font-bold" id="okInvNum">—</span></div>
+      <div class="flex justify-between"><span class="text-slate-500">المبلغ:</span><span class="font-bold text-emerald-600" id="okInvAmount">—</span></div>
+      <div class="flex justify-between"><span class="text-slate-500">الوسيلة:</span><span class="font-bold" id="okInvMethod">—</span></div>
+    </div>
+    <div class="flex gap-2 mt-5">
+      <button onclick="printInvoice()" class="flex-1 gradient-teal text-white py-2.5 rounded-xl font-bold flex items-center justify-center gap-1">
+        <span>🖨️</span><span>طباعة الفاتورة</span>
+      </button>
+      <button onclick="closeInvoiceModal()" class="flex-1 bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ PAYMENT SYSTEM (Algerian: CIB + EDAHABIA) ============
+const Payment = {
+  method: 'cib',
+  plan: null,
+  amount: 0,
+  pendingInvoice: null,
+  invoiceCounter: 1000,
+};
+
+function openPayment(planId, planName, amount, duration) {
+  Payment.plan = { id: planId, name: planName, duration: duration };
+  Payment.amount = amount;
+  document.getElementById('payPlanLabel').textContent = planName;
+  document.getElementById('payPlanDuration').textContent = duration;
+  document.getElementById('payAmount').innerHTML = amount.toLocaleString('ar-DZ') + ' <span class="text-sm">دج</span>';
+  document.getElementById('payAmount2').textContent = amount.toLocaleString('ar-DZ') + ' دج';
+  document.getElementById('payError').classList.add('hidden');
+  document.getElementById('paymentModal').classList.remove('hidden');
+  document.getElementById('paymentModal').classList.add('flex');
+  // Reset form
+  document.getElementById('cardNumber').value = '';
+  document.getElementById('cardName').value = '';
+  document.getElementById('cardExpiry').value = '';
+  document.getElementById('cardCvv').value = '';
+  selectPayMethod('cib');
+}
+
+function closePayment() {
+  document.getElementById('paymentModal').classList.add('hidden');
+  document.getElementById('paymentModal').classList.remove('flex');
+}
+
+function selectPayMethod(method) {
+  Payment.method = method;
+  document.getElementById('optCIB').classList.toggle('selected', method === 'cib');
+  document.getElementById('optCIB').classList.toggle('cib-selected', method === 'cib');
+  document.getElementById('optGOLD').classList.toggle('selected', method === 'gold');
+  document.getElementById('optGOLD').classList.toggle('gold-selected', method === 'gold');
+  // Update secure3d label
+  const sec = document.getElementById('secure3d');
+  if (method === 'gold') {
+    sec.innerHTML = '<span class="text-base">🟡</span><span>سيتم إرسال رمز OTP إلى رقم الهاتف المسجل في <b>القرض الشعبي الجزائري (CPA)</b></span>';
+  } else {
+    sec.innerHTML = '<span class="text-base">🔐</span><span>سيتم التحقق عبر بروتوكول <b>3D Secure</b> (محاكاة)</span>';
+  }
+}
+
+function formatCardNumber(input) {
+  let v = input.value.replace(/\D/g, '').slice(0, 16);
+  input.value = v.match(/.{1,4}/g)?.join(' ') || v;
+  const masked = input.value.padEnd(19, '•').slice(0, 19);
+  const target = Payment.method === 'cib' ? 'cibPreview' : 'goldPreview';
+  document.getElementById(target).textContent = masked;
+}
+
+function formatExpiry(input) {
+  let v = input.value.replace(/\D/g, '').slice(0, 4);
+  if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+  input.value = v;
+}
+
+function luhnCheck(num) {
+  const digits = num.replace(/\D/g, '').split('').reverse().map(Number);
+  if (digits.length < 13) return false;
+  let sum = 0;
+  digits.forEach((d, i) => {
+    if (i % 2 === 1) { d *= 2; if (d > 9) d -= 9; }
+    sum += d;
+  });
+  return sum % 10 === 0;
+}
+
+function processPayment() {
+  const err = document.getElementById('payError');
+  err.classList.add('hidden');
+  const num = document.getElementById('cardNumber').value;
+  const name = document.getElementById('cardName').value.trim();
+  const exp = document.getElementById('cardExpiry').value;
+  const cvv = document.getElementById('cardCvv').value;
+
+  // Validation
+  if (!luhnCheck(num)) { err.textContent = '❌ رقم البطاقة غير صحيح. تحقق من الرقم.'; err.classList.remove('hidden'); return; }
+  if (name.length < 3) { err.textContent = '❌ الاسم على البطاقة مطلوب.'; err.classList.remove('hidden'); return; }
+  if (!/^\d{2}\/\d{2}$/.test(exp)) { err.textContent = '❌ تاريخ الانتهاء غير صحيح (MM/YY).'; err.classList.remove('hidden'); return; }
+  if (cvv.length !== 3) { err.textContent = '❌ رمز CVV يجب أن يكون 3 أرقام.'; err.classList.remove('hidden'); return; }
+
+  // Simulate 3D Secure -> open OTP modal
+  document.getElementById('otpPhone').textContent = '••• ••• 0770';
+  closePayment();
+  const otp = document.getElementById('otpModal');
+  otp.classList.remove('hidden');
+  otp.classList.add('flex');
+  setTimeout(() => document.querySelector('.otp-box')?.focus(), 100);
+  setupOtpBoxes();
+}
+
+function setupOtpBoxes() {
+  const boxes = document.querySelectorAll('.otp-box');
+  boxes.forEach((box, i) => {
+    box.value = '';
+    box.oninput = (e) => {
+      const v = e.target.value.replace(/\D/g, '');
+      e.target.value = v;
+      if (v && i < boxes.length - 1) boxes[i + 1].focus();
+    };
+    box.onkeydown = (e) => {
+      if (e.key === 'Backspace' && !e.target.value && i > 0) boxes[i - 1].focus();
+    };
+  });
+}
+
+function verifyOtp() {
+  const boxes = document.querySelectorAll('.otp-box');
+  const otp = Array.from(boxes).map(b => b.value).join('');
+  if (otp !== '123456') {
+    alert('❌ رمز غير صحيح. الرمز التجريبي هو 123456');
+    return;
+  }
+  document.getElementById('otpModal').classList.add('hidden');
+  document.getElementById('otpModal').classList.remove('flex');
+  finalizePayment();
+}
+
+function finalizePayment() {
+  Payment.invoiceCounter += 1;
+  const num = document.getElementById('cardNumber').value.replace(/\s/g, '');
+  const masked = '**** **** **** ' + num.slice(-4);
+  const methodName = Payment.method === 'cib' ? 'بطاقة CIB' : 'البطاقة الذهبية (Edahabia)';
+  const methodIssuer = Payment.method === 'cib' ? 'عبر شبكة CIB / SATIM' : 'عبر البريد الجزائري (Edahabia)';
+  const orderId = 'TXN-' + Date.now().toString(36).toUpperCase();
+  const invNum = 'INV-2026-' + String(Payment.invoiceCounter).padStart(5, '0');
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('fr-DZ') + ' ' + now.toLocaleTimeString('fr-DZ', { hour: '2-digit', minute: '2-digit' });
+  const tva = Math.round(Payment.amount * 0.19);
+  const fee = Math.round(Payment.amount * 0.01);
+  const subtotal = Payment.amount - tva - fee;
+
+  // Fill invoice
+  document.getElementById('invNumber').textContent = invNum;
+  document.getElementById('invDate').textContent = dateStr;
+  document.getElementById('invOrderId').textContent = orderId;
+  document.getElementById('invClientName').textContent = (window.State && State.user && State.user.name) || 'د. تومي كريمة';
+  document.getElementById('invClientEmail').textContent = (window.State && State.user && State.user.email) || 'tommy.karima@tawasol.app';
+  document.getElementById('invClientAddress').textContent = 'الجزائر العاصمة — 16000';
+  document.getElementById('invPayMethod').textContent = methodName;
+  document.getElementById('invPayDetail').textContent = masked + ' • ' + methodIssuer;
+  document.getElementById('invPayDate').textContent = dateStr;
+  document.getElementById('invDesc').textContent = 'اشتراك ' + Payment.plan.name;
+  document.getElementById('invDuration').textContent = Payment.plan.duration;
+  document.getElementById('invSubtotal').textContent = subtotal.toLocaleString('ar-DZ');
+  document.getElementById('invSubtotal2').textContent = subtotal.toLocaleString('ar-DZ') + ' دج';
+  document.getElementById('invTva').textContent = tva.toLocaleString('ar-DZ') + ' دج';
+  document.getElementById('invFee').textContent = fee.toLocaleString('ar-DZ') + ' دج';
+  document.getElementById('invTotal').textContent = Payment.amount.toLocaleString('ar-DZ') + ' دج';
+
+  // Show success modal
+  document.getElementById('okInvNum').textContent = invNum;
+  document.getElementById('okInvAmount').textContent = Payment.amount.toLocaleString('ar-DZ') + ' دج';
+  document.getElementById('okInvMethod').textContent = methodName;
+  document.getElementById('invoiceContainer').classList.remove('hidden');
+  const im = document.getElementById('invoiceModal');
+  im.classList.remove('hidden');
+  im.classList.add('flex');
+}
+
+function printInvoice() {
+  window.print();
+}
+
+function closeInvoiceModal() {
+  document.getElementById('invoiceModal').classList.add('hidden');
+  document.getElementById('invoiceModal').classList.remove('flex');
+  document.getElementById('invoiceContainer').classList.add('hidden');
+  // Re-render app to reflect new subscription
+  if (typeof render === 'function') render();
+}
 </script>
 </body>
 </html>
