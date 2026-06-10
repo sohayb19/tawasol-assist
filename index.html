@@ -235,7 +235,7 @@ const DISORDERS = {
           'عجز مستمر في التواصل والتفاعل الاجتماعي عبر سياقات متعددة',
           'أنماط سلوك/اهتمامات/أنشطة مقيدة ومتكررة',
           'ظهور الأعراض في مرحلة النمو المبكرة',
-          'أعراض تسبب ضررًا سريريًا ذا مغزى'
+          'أعراض تسبب ضررًا عياديًا ذا مغزى'
         ],
         differential: 'اضطراب النمو اللغوي · الإعاقة الذهنية · ضعف السمع · اضطراب التعلق'
       },
@@ -284,10 +284,10 @@ const DISORDERS = {
     label: 'الحبسة (Aphasia)',
     icon: '💬',
     items: [
-      { name: 'حبسة بروكا', en: 'Broca\'s Aphasia', dsm: 'F80.1 / 6A01.0', criteria: ['كلام قليل ومتقطع', 'فهم نسبي محفوظ', 'إدراك العجز'], differential: 'حبسة شاملة · حبسة التوصيل' },
+      { name: 'حبسة بروكا', en: 'Broca\'s Aphasia', dsm: 'F80.1 / 6A01.0', criteria: ['كلام قليل ومتقطع', 'فهم نسبي محفوظ', 'إدراك العجز'], differential: 'حبسة شاملة · الحبسة للتوصيلية' },
       { name: 'حبسة فيرنيكه', en: 'Wernicke\'s Aphasia', dsm: 'F80.2 / 6A01.1', criteria: ['كلام سلس لكن فارغ المحتوى (logorrhea)', 'فهم ضعيف', 'غياب الوعي بالعجز'], differential: 'حبسة حسية عبر قشرية' },
       { name: 'حبسة شاملة', en: 'Global Aphasia', dsm: 'F80.3 / 6A01.2', criteria: ['اضطراب شديد في كل من الفهم والإنتاج', 'محدودية التواصل'], differential: 'حبسة مختلطة' },
-      { name: 'حبسة التوصيل', en: 'Conduction Aphasia', dsm: 'F80.4 / 6A01.3', criteria: ['كلام سلس مع أخطاء صوتية متكررة', 'صعوبة التكرار مع فهم محفوظ'], differential: 'حبسة بروكا' }
+      { name: 'الحبسة للتوصيلية', en: 'Conduction Aphasia', dsm: 'F80.4 / 6A01.3', criteria: ['كلام سلس مع أخطاء صوتية متكررة', 'صعوبة التكرار مع فهم محفوظ'], differential: 'حبسة بروكا' }
     ]
   },
   dysarthria: {
@@ -305,7 +305,7 @@ const DISORDERS = {
     icon: '🤲',
     items: [
       { name: 'حبسة حركية كلامية (AOS)', en: 'Apraxia of Speech', criteria: ['صعوبة في تخطيط الحركات اللازمة للنطق', 'أخطاء صوتية غير ثابتة', 'وعي بالعجز'], differential: 'الديزارتريا · حبسة بروكا' },
-      { name: 'ابركسيا البلع', en: 'Apraxia of Swallowing', criteria: ['صعوبة في تتابع حركات البلع', 'مع عدم وجود ضعف عضلي'], differential: 'عسر البلع' }
+      { name: 'اضطراب البلع', en: 'Apraxia of Swallowing', criteria: ['صعوبة في تتابع حركات البلع', 'مع عدم وجود ضعف عضلي'], differential: 'عسر البلع' }
     ]
   },
   voiceSwallow: {
@@ -522,6 +522,7 @@ function renderWelcome(){
         <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 leading-tight">
           مرحبًا بك في<br/>
           <span class="bg-gradient-to-l from-teal-500 to-indigo-600 bg-clip-text text-transparent">TawasoL.assist</span>
+          <div class="text-sm md:text-base font-semibold text-slate-600 mt-3 max-w-xl mx-auto leading-relaxed">منصة رقمية ذكية كاملة للكشف، التقييم والمساعدة في علاج اضطرابات اللغة الشفوية والمكتوبة عند الطفل والراشد</div>
         </h1>
         <p class="text-slate-600 mt-4 text-lg leading-relaxed">
           منصة عيادية تفاعلية تربط بين الأخصائيين، الأولياء، الطلاب، والأخصائيين الطبيين.
@@ -542,7 +543,7 @@ function renderWelcome(){
           </div>
           <div class="bg-white/60 backdrop-blur rounded-xl p-3 border border-white/60">
             <p class="text-2xl font-extrabold text-indigo-600">5</p>
-            <p class="text-xs text-slate-600">خطوات إكلينيكية</p>
+            <p class="text-xs text-slate-600">خطوات عيادية</p>
           </div>
           <div class="bg-white/60 backdrop-blur rounded-xl p-3 border border-white/60">
             <p class="text-2xl font-extrabold text-rose-600">22+</p>
@@ -1022,7 +1023,7 @@ function attachSLP() {
                   </ul>
                 </div>
                 <div>
-                  <p class="font-semibold text-amber-700">التشخيص التفريقي (Differential):</p>
+                  <p class="font-semibold text-amber-700">التشخيص الفارقي (Differential):</p>
                   <p class="text-slate-600">${d.differential}</p>
                 </div>
               </div>
@@ -1402,9 +1403,9 @@ function renderClinicalWizard() {
     <div class="flex items-center justify-between gap-1 mb-5 overflow-x-auto">
       ${[
         {n:1,t:'التاريخ المرضي',i:'📝'},
-        {n:2,t:'التقييم السريري للنطق',i:'🩺'},
+        {n:2,t:'التقييم العيادي للنطق',i:'🩺'},
         {n:3,t:'الإحالات التكميلية',i:'🔗'},
-        {n:4,t:'التشخيص التفريقي',i:'⚖️'},
+        {n:4,t:'التشخيص الفارقي',i:'⚖️'},
         {n:5,t:'القرار النهائي والخطة',i:'📄'},
       ].map((s,i) => `
         <button data-wizard-tab="${s.n}" class="flex flex-col items-center min-w-fit px-2 group">
@@ -1486,7 +1487,7 @@ function renderStep1History() {
       </div>
       <div class="flex justify-between pt-2">
         <button class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600">حفظ مسودة</button>
-        <button onclick="State.caseStep=2;render()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold flex items-center gap-2">التالي: التقييم السريري ${ICONS.next}</button>
+        <button onclick="State.caseStep=2;render()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold flex items-center gap-2">التالي: التقييم العيادي ${ICONS.next}</button>
       </div>
     </div>
     <div>
@@ -1538,7 +1539,7 @@ function renderStep2Assessment() {
             <div class="checklist-item p-2 rounded-lg flex items-center justify-between">
               <span>${c.n}</span>
               <select class="text-xs px-2 py-1 rounded border border-slate-200">
-                <option>طبيعي</option><option>شذوذ بسيط</option><option>شذوذ واضح</option>
+                <option>طبيعي</option><option>درجة بسيطة</option><option>درجة واضحة</option>
               </select>
             </div>
           `).join('')}
@@ -1693,7 +1694,7 @@ function renderStep3Referrals() {
 
     <div class="flex justify-between pt-2">
       <button onclick="State.caseStep=2;render()" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 flex items-center gap-2">${ICONS.back} السابق</button>
-      <button onclick="State.caseStep=4;render()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold flex items-center gap-2">التالي: التشخيص التفريقي ${ICONS.next}</button>
+      <button onclick="State.caseStep=4;render()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold flex items-center gap-2">التالي: التشخيص الفارقي ${ICONS.next}</button>
     </div>
   </div>
   `;
@@ -1714,7 +1715,7 @@ function triggerReferral(target) {
 function renderStep4Differential() {
   return `
   <div class="space-y-4">
-    <h4 class="font-bold text-slate-800">⚖️ التشخيص التفريقي (Differential Diagnosis)</h4>
+    <h4 class="font-bold text-slate-800">⚖️ التشخيص الفارقي (Differential Diagnosis)</h4>
     <p class="text-sm text-slate-600">تحليل النتائج لاستبعاد الأسباب المتداخلة</p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1723,7 +1724,7 @@ function renderStep4Differential() {
         { h: 'الإعاقة الذهنية', e: 'Intellectual Disability', icon: '🧠', status: 'ruled', result: 'WISC-V: معامل ذكاء 105 (طبيعي)' },
         { h: 'التوحد', e: 'Autism (ASD)', icon: '🦋', status: 'ruled', result: 'M-CHAT: 1/8 — تواصل اجتماعي محفوظ' },
         { h: 'تأخر لغوي نمائي', e: 'Specific Language Impairment', icon: '💬', status: 'confirmed', result: 'CELF-5: اللغة الاستقبالية طبيعية، التعبيرية أقل من المتوقع' },
-        { h: 'اضطراب النطق الصوتي', e: 'Phonological Disorder', icon: '🔤', status: 'confirmed', result: 'اختبار التسمية: إبدال س ← ت في 67% من الكلمات' },
+        { h: 'اضطراب النطق', e: 'Phonological Disorder', icon: '🔤', status: 'confirmed', result: 'اختبار التسمية: إبدال س ← ت في 67% من الكلمات' },
       ].map(d => `
         <div class="card p-4 border-r-4 ${d.status==='ruled'?'border-emerald-500':'border-rose-500'}">
           <div class="flex items-start gap-3">
@@ -1744,7 +1745,7 @@ function renderStep4Differential() {
     </div>
 
     <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-      <p class="font-bold text-amber-800 mb-1">🧠 الخلاصة الإكلينيكية</p>
+      <p class="font-bold text-amber-800 mb-1">🧠 الخلاصة العيادية</p>
       <p class="text-sm text-amber-900">
         النتائج تستبعد ضعف السمع، الإعاقة الذهنية، والتوحد. 
         تُؤكد <strong>اضطراب نطق صوتي (Phonological Disorder)</strong> مع إبدال صوت السين (س) بالتاء (ت) في الموضعين الأول والأخير.
@@ -1764,7 +1765,7 @@ function renderStep5Report() {
   return `
   <div class="space-y-4">
     <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4">
-      <h4 class="font-bold text-emerald-800 mb-2">📄 التقرير السريري + خطة العلاج</h4>
+      <h4 class="font-bold text-emerald-800 mb-2">📄 التقرير العيادي + خطة العلاج</h4>
       <p class="text-sm text-slate-700 mb-3">تم توليد التقرير تلقائيًا بناءً على الخطوات السابقة</p>
       <div class="bg-white rounded-lg p-3 text-sm space-y-1">
         <p><strong>التشخيص:</strong> اضطراب نطق صوتي (Phonological Disorder) — إبدال س ← ت</p>
@@ -2186,7 +2187,7 @@ function renderParentAdult() {
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         ${[
           {n:'تسمية الصور', i:'🏷️', dur:'5 دقائق', t:'صور يومية + تسجيل'},
-          {n:'مهام الفهم', i:'👂', dur:'7 دقائق', t:'استمع وأشر للصورة'},
+          {n:'تمارين الفهم', i:'👂', dur:'7 دقائق', t:'استمع وأشر للصورة'},
           {n:'حوار قصير', i:'💬', dur:'5 دقائق', t:'محادثة مع المرافق'},
         ].map(e => `
           <div class="card p-3 border-2 border-slate-100">
