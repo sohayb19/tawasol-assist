@@ -1,0 +1,2473 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TawasoL.assist — منصة الأخصائي الأرطفوني</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#0ea5a4;
+    --primary-dark:#0b7f7e;
+    --secondary:#6366f1;
+    --accent:#f59e0b;
+    --bg:#f1f5f9;
+  }
+  *{font-family:'Cairo','Tajawal',system-ui,sans-serif}
+  body{background:var(--bg)}
+  .nav-btn{transition:all .2s}
+  .nav-btn:hover,.nav-btn.active{background:linear-gradient(135deg,#0ea5a4,#0b7f7e);color:#fff;transform:translateY(-1px);box-shadow:0 8px 20px -8px #0ea5a4}
+  .card{background:#fff;border-radius:1rem;box-shadow:0 4px 20px -8px rgba(15,23,42,.08);transition:all .2s}
+  .card:hover{box-shadow:0 8px 28px -8px rgba(15,23,42,.15)}
+  .chip{display:inline-flex;align-items:center;gap:.25rem;padding:.25rem .6rem;border-radius:9999px;font-size:.75rem;font-weight:600}
+  .pulse-dot{width:10px;height:10px;border-radius:50%;background:#ef4444;animation:pulse 1.2s infinite}
+  @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.5}}
+  @keyframes bounce-soft{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+  @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-15deg)}75%{transform:rotate(15deg)}}
+  .animal-happy{animation:bounce-soft .6s ease-in-out 3}
+  .animal-sad{animation:shake .4s ease-in-out 3}
+  .scroll-fade{animation:fadeIn .4s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .step-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;transition:all .2s}
+  .step-dot.active{background:#0ea5a4;color:#fff;box-shadow:0 0 0 4px rgba(14,165,164,.18)}
+  .step-dot.done{background:#10b981;color:#fff}
+  .step-dot.pending{background:#e2e8f0;color:#64748b}
+  .bar-fill{transition:width .8s cubic-bezier(.4,0,.2,1)}
+  .gradient-teal{background:linear-gradient(135deg,#0ea5a4 0%,#0891b2 100%)}
+  .gradient-purple{background:linear-gradient(135deg,#8b5cf6 0%,#6366f1 100%)}
+  .gradient-rose{background:linear-gradient(135deg,#fb7185 0%,#e11d48 100%)}
+  .gradient-amber{background:linear-gradient(135deg,#fbbf24 0%,#f59e0b 100%)}
+  .gradient-emerald{background:linear-gradient(135deg,#34d399 0%,#059669 100%)}
+  .modal-backdrop{background:rgba(15,23,42,.55);backdrop-filter:blur(4px)}
+  .recording-pulse{animation:recPulse 1s infinite}
+  @keyframes recPulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.7)}70%{box-shadow:0 0 0 14px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+  .aac-btn{transition:all .15s;user-select:none}
+  .aac-btn:active{transform:scale(.95)}
+  .aac-btn:hover{transform:translateY(-2px);box-shadow:0 6px 14px -4px rgba(99,102,241,.4)}
+  details>summary{list-style:none;cursor:pointer}
+  details>summary::-webkit-details-marker{display:none}
+  .tab-active{background:#0ea5a4;color:#fff}
+  .badge{font-size:.7rem;padding:.15rem .5rem;border-radius:9999px;font-weight:700}
+  input[type=range]{accent-color:#0ea5a4}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:8px}
+  ::-webkit-scrollbar-track{background:transparent}
+  .glow{box-shadow:0 0 0 4px rgba(14,165,164,.12)}
+  .checklist-item:hover{background:#f0fdfa}
+  .auth-bg{
+    background:
+      radial-gradient(circle at 0% 0%, rgba(14,165,164,.18), transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(99,102,241,.18), transparent 45%),
+      linear-gradient(135deg, #f0fdfa 0%, #eef2ff 100%);
+    min-height:100vh;
+  }
+  .glass{
+    background:rgba(255,255,255,.7);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.6);
+  }
+  .floaty{animation:floaty 6s ease-in-out infinite}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+  .role-card{transition:all .2s;cursor:pointer}
+  .role-card:hover{transform:translateY(-4px);box-shadow:0 12px 28px -10px rgba(14,165,164,.4)}
+  .test-option{cursor:pointer;transition:all .15s}
+  .test-option:hover{background:#f0fdfa;border-color:#0ea5a4}
+  .test-option.selected{background:#ccfbf1;border-color:#0ea5a4}
+  .provider-btn{transition:all .2s}
+  .provider-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px -8px rgba(15,23,42,.25)}
+  .progress-bar-anim{animation:progressFill 1.2s ease-out}
+  @keyframes progressFill{from{width:0}}
+  .lang-toggle{cursor:pointer;padding:.25rem .5rem;border-radius:.5rem;font-weight:600}
+  .lang-toggle.active{background:#0ea5a4;color:#fff}
+  .object-card{cursor:pointer;transition:all .2s}
+  .object-card:hover{transform:scale(1.05)}
+  .object-card.correct{border-color:#10b981;background:#ecfdf5}
+  .object-card.wrong{border-color:#ef4444;background:#fef2f2}
+  .animal-emoji{font-size:5rem;display:inline-block}
+</style>
+</head>
+<body class="min-h-screen text-slate-800">
+
+<!-- ============ TOP BAR ============ -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 rounded-xl gradient-teal flex items-center justify-center text-white text-2xl">🩺</div>
+      <div>
+        <h1 class="font-extrabold text-lg leading-tight text-slate-800">TawasoL<span class="text-teal-600">.assist</span></h1>
+        <p class="text-xs text-slate-500">منصة الأخصائي الأرطفوني — Clinical SLP Platform</p>
+      </div>
+    </div>
+
+    <nav class="hidden lg:flex items-center gap-1 bg-slate-100 rounded-xl p-1" id="roleNav">
+      <button data-role="slp" class="nav-btn px-3 py-1.5 rounded-lg text-sm font-semibold active">🩺 الأرطفوني</button>
+      <button data-role="parent" class="nav-btn px-3 py-1.5 rounded-lg text-sm font-semibold">👨‍👩‍👧 فضاء الولي</button>
+      <button data-role="student" class="nav-btn px-3 py-1.5 rounded-lg text-sm font-semibold">🎓 فضاء الطالب</button>
+      <button data-role="specialist" class="nav-btn px-3 py-1.5 rounded-lg text-sm font-semibold">🧠 الأخصائي الطبي</button>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <div class="hidden md:flex items-center gap-1 bg-slate-100 rounded-lg p-1 text-xs">
+        <span class="lang-toggle active" data-lang="ar">AR</span>
+        <span class="lang-toggle" data-lang="fr">FR</span>
+      </div>
+      <button class="relative w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 grid place-items-center">🔔
+        <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500"></span>
+      </button>
+      <div class="flex items-center gap-2 pr-2 relative">
+        <button id="userMenuBtn" onclick="toggleUserMenu()" class="flex items-center gap-2 hover:bg-slate-50 rounded-lg pr-1 pl-2 py-1">
+          <div class="w-9 h-9 rounded-full gradient-purple text-white grid place-items-center font-bold">د.ت</div>
+          <div class="hidden md:block text-right">
+            <p class="text-sm font-semibold leading-tight" id="headerUserName">د. تومي كريمة</p>
+            <p class="text-xs text-slate-500" id="headerUserRole">أخصائي نطق</p>
+          </div>
+          <span class="text-slate-400 hidden md:inline">▾</span>
+        </button>
+        <div id="userMenu" class="hidden absolute top-full mt-2 left-0 bg-white border border-slate-200 rounded-xl shadow-xl w-64 p-2 z-50 text-right">
+          <div class="p-3 border-b border-slate-100">
+            <p class="font-bold text-sm" id="menuUserName">د. تومي كريمة</p>
+            <p class="text-xs text-slate-500" id="menuUserEmail">tommy.karima@tawasol.app</p>
+            <p class="text-xs text-teal-600 mt-1" id="menuProvider">مسجّل عبر: Email</p>
+          </div>
+          <button onclick="changeRole()" class="w-full text-right px-3 py-2 hover:bg-slate-50 rounded-lg text-sm flex items-center gap-2">🔄 تغيير الواجهة</button>
+          <button onclick="logout()" class="w-full text-right px-3 py-2 hover:bg-rose-50 text-rose-600 rounded-lg text-sm flex items-center gap-2">🚪 تسجيل الخروج</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile role nav -->
+<div class="lg:hidden bg-white border-b border-slate-200 px-2 py-2 overflow-x-auto">
+  <div class="flex gap-1" id="roleNavMobile">
+    <button data-role="slp" class="nav-btn px-3 py-1.5 rounded-lg text-sm font-semibold active whitespace-nowrap">🩺 SLP</button>
+    <button data-role="parent" class="nav-btn px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">👨‍👩‍👧 Parent</button>
+    <button data-role="student" class="nav-btn px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">🎓 Student</button>
+    <button data-role="specialist" class="nav-btn px-3 py-1.5 rounded-lg text-sm font-semibold whitespace-nowrap">🧠 Specialist</button>
+  </div>
+</div>
+
+<main id="app" class="max-w-7xl mx-auto px-4 py-6 scroll-fade"></main>
+
+<!-- ============ MODAL ============ -->
+<div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+  <div class="modal-backdrop absolute inset-0" id="modalBackdrop"></div>
+  <div id="modalContent" class="relative bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"></div>
+</div>
+
+<footer class="mt-12 py-6 text-center text-xs text-slate-500 border-t border-slate-200 bg-white">
+  © 2026 TawasoL.assist — Clinical Prototype v1.0 · مبني على معايير DSM-5 / CIM-11
+</footer>
+
+<script>
+/* ===========================================================
+   TAWASOL.ASSIST — Clinical SLP Prototype
+   Full interactive simulation
+   =========================================================== */
+
+const State = {
+  // Auth flow: welcome -> auth -> role-select -> app
+  screen: 'welcome', // 'welcome' | 'auth' | 'role-select' | 'app'
+  user: null,        // {name, email, provider}
+  provider: null,    // 'email' | 'google' | 'icloud'
+  role: 'slp',       // active workspace once in app
+  lang: 'ar',
+  caseStep: 1,
+  recording: false,
+  recordingSeconds: 0,
+  recordingTimer: null,
+  assessmentResult: null,
+  mchatScore: 0,
+  mchatAnswered: 0,
+  progressData: [
+    { session: 1, accuracy: 28, date: '2026-04-10' },
+    { session: 2, accuracy: 45, date: '2026-04-24' },
+    { session: 3, accuracy: 72, date: '2026-05-08' },
+    { session: 4, accuracy: 88, date: '2026-05-22' },
+    { session: 5, accuracy: 96, date: '2026-06-05' },
+  ],
+  studentLogged: false,
+  notifications: 3,
+  liveTest: null, // active running test session
+};
+
+/* ============ DISORDER PORTFOLIO (DSM-5 / CIM-11) ============ */
+const DISORDERS = {
+  neurodevelopmental: {
+    label: 'الاضطرابات النمائية العصبية (للأطفال)',
+    icon: '🧒',
+    items: [
+      {
+        name: 'اضطراب طيف التوحد', en: 'Autism Spectrum Disorder (ASD)',
+        dsm: 'F84.0 / 6A02', criteria: [
+          'عجز مستمر في التواصل والتفاعل الاجتماعي عبر سياقات متعددة',
+          'أنماط سلوك/اهتمامات/أنشطة مقيدة ومتكررة',
+          'ظهور الأعراض في مرحلة النمو المبكرة',
+          'أعراض تسبب ضررًا سريريًا ذا مغزى'
+        ],
+        differential: 'اضطراب النمو اللغوي · الإعاقة الذهنية · ضعف السمع · اضطراب التعلق'
+      },
+      {
+        name: 'اضطراب نقص الانتباه وفرط الحركة', en: 'ADHD',
+        dsm: 'F90 / 6A05', criteria: [
+          'نمط مستمر من عدم الانتباه و/أو فرط النشاط-الاندفاعية',
+          'تكرار الأعراض لمدة ≥ 6 أشهر',
+          'الظهور قبل سن 12',
+          'تدهور في الأداء الاجتماعي/المدرسي'
+        ],
+        differential: 'القلق · الاضطرابات المزاجية · اضطراب التعلم المحدد'
+      },
+      {
+        name: 'اضطراب التعلم المحدد', en: 'Specific Learning Disorder (SLD)',
+        dsm: 'F81 / 6A03', criteria: [
+          'صعوبة تعلم المهارات الأكاديمية (القراءة، الكتابة، الرياضيات)',
+          'أداء دون المستوى المتوقع للعمر الزمني',
+          'صعوبات تبدأ في سن المدرسة',
+          'ليست نتيجة إعاقة ذهنية أو حسية'
+        ],
+        differential: 'عسر القراءة · عسر الكتابة · صعوبات لغوية نمائية'
+      },
+      {
+        name: 'اضطرابات التواصل', en: 'Communication Disorders',
+        dsm: 'F80 / 6A01', criteria: [
+          'اضطراب اللغة · اضطراب النطق · اضطراب الطلاقة (التأتأة)',
+          'صعوبات مستمرة في اكتساب واستخدام اللغة',
+          'انخفاض القدرات اللغوية بشكل ملحوظ'
+        ],
+        differential: 'ضعف السمع · الإعاقة الذهنية · التوحد'
+      }
+    ]
+  },
+  neurocognitive: {
+    label: 'الاضطرابات العصبية المعرفية (للبالغين)',
+    icon: '🧓',
+    items: [
+      { name: 'الزهايمر', en: 'Alzheimer\'s', dsm: 'F00 / 6D80', criteria: ['تدهور تدريجي في الذاكرة والوظائف التنفيذية', 'فقدان الاستقلالية في الأنشطة اليومية'], differential: 'الخرف الوعائي · خرف أجسام ليوي' },
+      { name: 'الباركنسون', en: 'Parkinson\'s', dsm: 'F02.3 / 6D85', criteria: ['بطء الحركة · الرعشة · تصلب العضلات', 'اضطرابات النطق والبلع'], differential: 'الخرف المصاحب لأجسام ليوي' },
+      { name: 'الخرف الجبهي الصدغي', en: 'Frontotemporal', dsm: 'F02.0 / 6D83', criteria: ['تغيرات في الشخصية والسلوك', 'اضطرابات لغوية مترقية'], differential: 'الزهايمر · الاكتئاب' },
+      { name: 'الخرف الوعائي', en: 'Vascular Neurocognitive', dsm: 'F01 / 6D81', criteria: ['تدهور مفاجئ أو متدرج بعد أحداث وعائية', 'خلل في الذاكرة والوظائف التنفيذية'], differential: 'الزهايمر' }
+    ]
+  },
+  aphasia: {
+    label: 'الحبسة (Aphasia)',
+    icon: '💬',
+    items: [
+      { name: 'حبسة بروكا', en: 'Broca\'s Aphasia', dsm: 'F80.1 / 6A01.0', criteria: ['كلام قليل ومتقطع', 'فهم نسبي محفوظ', 'إدراك العجز'], differential: 'حبسة شاملة · حبسة التوصيل' },
+      { name: 'حبسة فيرنيكه', en: 'Wernicke\'s Aphasia', dsm: 'F80.2 / 6A01.1', criteria: ['كلام سلس لكن فارغ المحتوى (logorrhea)', 'فهم ضعيف', 'غياب الوعي بالعجز'], differential: 'حبسة حسية عبر قشرية' },
+      { name: 'حبسة شاملة', en: 'Global Aphasia', dsm: 'F80.3 / 6A01.2', criteria: ['اضطراب شديد في كل من الفهم والإنتاج', 'محدودية التواصل'], differential: 'حبسة مختلطة' },
+      { name: 'حبسة التوصيل', en: 'Conduction Aphasia', dsm: 'F80.4 / 6A01.3', criteria: ['كلام سلس مع أخطاء صوتية متكررة', 'صعوبة التكرار مع فهم محفوظ'], differential: 'حبسة بروكا' }
+    ]
+  },
+  dysarthria: {
+    label: 'الديزارتريا (Dysarthria)',
+    icon: '👄',
+    items: [
+      { name: 'ديزارتريا رخوة (Spastic)', en: '', criteria: ['زيادة توتر العضلات', 'بطء الكلام', 'صوت متوتر'], differential: 'Apraxia · حبسة' },
+      { name: 'ديزارتريا رخوة (Flaccid)', en: '', criteria: ['انخفاض توتر العضلات', 'ضعف التنفس', 'صوت أنفي'], differential: 'شلل العصب الوجهي' },
+      { name: 'ديزارتريا رنحية (Ataxic)', en: '', criteria: ['تنسيق حركي ضعيف', 'كلام متقطع', 'تغيرات في الإيقاع'], differential: 'Rer Cerebellar disorder' },
+      { name: 'ديزارتريا مختلطة', en: 'Mixed Dysarthria', criteria: ['مزيج من الأعراض (الشلل الرعاشي)', 'تأذي عصبونات حركية عليا وسفلى'], differential: 'ALS · التصلب الجانبي' }
+    ]
+  },
+  apraxia: {
+    label: 'الابراكسيا (Apraxia)',
+    icon: '🤲',
+    items: [
+      { name: 'حبسة حركية كلامية (AOS)', en: 'Apraxia of Speech', criteria: ['صعوبة في تخطيط الحركات اللازمة للنطق', 'أخطاء صوتية غير ثابتة', 'وعي بالعجز'], differential: 'الديزارتريا · حبسة بروكا' },
+      { name: 'ابركسيا البلع', en: 'Apraxia of Swallowing', criteria: ['صعوبة في تتابع حركات البلع', 'مع عدم وجود ضعف عضلي'], differential: 'عسر البلع' }
+    ]
+  },
+  voiceSwallow: {
+    label: 'اضطرابات الصوت والبلع',
+    icon: '🎤',
+    items: [
+      { name: 'بحة الصوت الوظيفية', en: 'Functional Dysphonia', criteria: ['تغير في جودة الصوت', 'إجهاد صوتي', 'لا توجد آفة عضوية'], differential: 'شلل الحبل الصوتي' },
+      { name: 'شلل الحبل الصوتي', en: 'Vocal Fold Paralysis', criteria: ['ضعف الصوت أو انقطاعه', 'صعوبة البلع', 'ضيق التنفس'], differential: 'ورم الحنجرة' },
+      { name: 'عسر البلع (Dysphagia)', en: '', criteria: ['صعوبة في البلع', 'سوء التغذية', 'الشرود الرئوي'], differential: 'الأورام · الارتجاع' },
+      { name: 'خلل النطق الوظيفي', en: '', criteria: ['فرط أو نقص التوتر العضلي', 'تأذي الأنسجة الرخوة'], differential: 'اضطرابات عصبية' }
+    ]
+  }
+};
+
+/* ============ ASSESSMENT PORTFOLIO ============ */
+const ASSESSMENTS = [
+  { id: 1, name: 'اختبار بوسطن لتسمية الصور (BNT)', en: 'Boston Naming Test', domain: 'الذاكرة/التسمية', adapted: true, functional: true, age: 'كبار' },
+  { id: 2, name: 'مقياس وكسلر للذكاء (WISC-V)', en: 'Wechsler Intelligence Scale', domain: 'الذكاء', adapted: true, functional: false, age: 'أطفال 6-16' },
+  { id: 3, name: 'اختبار اللغة الاستقبالية والتعبيرية (CELF-5)', en: 'CELF-5', domain: 'اللغة', adapted: true, functional: true, age: '5-21' },
+  { id: 4, name: 'اختبار جولدفان-بيك للقراءة', en: 'Goldman-Fristoe', domain: 'القراءة/النطق', adapted: true, functional: false, age: 'أطفال' },
+  { id: 5, name: 'بطارية الفحص العصبي النفسي', en: 'NEPSY-II', domain: 'وظائف تنفيذية', adapted: true, functional: false, age: '3-16' },
+  { id: 6, name: 'مقياس فاينلاند للتكيف السلوكي', en: 'Vineland Adaptive', domain: 'سلوكي', adapted: true, functional: false, age: '0-90' },
+  { id: 7, name: 'اختبار بيبودي للصور (PPVT)', en: 'Peabody Picture Vocabulary', domain: 'مفردات استقبالية', adapted: false, functional: false, age: '2.5-90' },
+  { id: 8, name: 'بطارية لغة الأطفال (BLT)', en: 'BLT', domain: 'لغة شاملة', adapted: false, functional: false, age: '4-8' },
+];
+
+/* ============ PHONETIC CHART (Arabic + French) ============ */
+const PHONETIC_CHART = {
+  consonants: [
+    { ar: 'ب', fr: 'b', pos: 'شفوي شفهي', manner: 'انفجاري' },
+    { ar: 'ت', fr: 't', pos: 'لثوي', manner: 'انفجاري' },
+    { ar: 'ث', fr: 'θ', pos: 'أسناني', manner: 'احتكاكي' },
+    { ar: 'ج', fr: 'ʤ', pos: 'لثوي', manner: 'مركب' },
+    { ar: 'ح', fr: 'ħ', pos: 'حلقي', manner: 'احتكاكي' },
+    { ar: 'خ', fr: 'x', pos: 'طبقي', manner: 'احتكاكي' },
+    { ar: 'د', fr: 'd', pos: 'لثوي', manner: 'انفجاري' },
+    { ar: 'ذ', fr: 'ð', pos: 'أسناني', manner: 'احتكاكي' },
+    { ar: 'ر', fr: 'r', pos: 'لثوي', manner: 'تكراري' },
+    { ar: 'ز', fr: 'z', pos: 'لثوي', manner: 'احتكاكي' },
+    { ar: 'س', fr: 's', pos: 'لثوي', manner: 'احتكاكي' },
+    { ar: 'ش', fr: 'ʃ', pos: 'غاري', manner: 'احتكاكي مركب' },
+    { ar: 'ص', fr: 'sˤ', pos: 'لثوي مهموس', manner: 'احتكاكي' },
+    { ar: 'ض', fr: 'dˤ', pos: 'لثوي مجهور', manner: 'انفجاري' },
+    { ar: 'ط', fr: 'tˤ', pos: 'لثوي مهموس', manner: 'انفجاري' },
+    { ar: 'ظ', fr: 'ðˤ', pos: 'لثوي مجهور', manner: 'احتكاكي' },
+    { ar: 'ع', fr: 'ʔ', pos: 'حلقي', manner: 'انفجاري' },
+    { ar: 'غ', fr: 'ɣ', pos: 'لهوي', manner: 'احتكاكي' },
+    { ar: 'ف', fr: 'f', pos: 'شفوي', manner: 'احتكاكي' },
+    { ar: 'ق', fr: 'q', pos: 'لهوي', manner: 'انفجاري' },
+    { ar: 'ك', fr: 'k', pos: 'طبقي', manner: 'انفجاري' },
+    { ar: 'ل', fr: 'l', pos: 'لثوي', manner: 'جانبي' },
+    { ar: 'م', fr: 'm', pos: 'شفوي', manner: 'أنفي' },
+    { ar: 'ن', fr: 'n', pos: 'لثوي', manner: 'أنفي' },
+    { ar: 'ه', fr: 'h', pos: 'حلقي', manner: 'احتكاكي' },
+    { ar: 'و', fr: 'w', pos: 'شفوي', manner: 'شبه حركي' },
+    { ar: 'ي', fr: 'j', pos: 'غاري', manner: 'شبه حركي' },
+  ],
+  vowels: [
+    { ar: 'َ (فتحة)', fr: 'a', type: 'أمامي' },
+    { ar: 'ِ (كسرة)', fr: 'i', type: 'أمامي' },
+    { ar: 'ُ (ضمة)', fr: 'u', type: 'خلفي' },
+  ]
+};
+
+/* ============ M-CHAT QUESTIONS ============ */
+const MCHAT_QUESTIONS = [
+  { q: 'هل تحب طفلك أن يُحرّك يديه أو رجليه بشكل غريب ومتكرر؟', risk: true },
+  { q: 'هل يهتم طفلك بالآخرين؟', risk: false, positive: true },
+  { q: 'هل يحب طفلك التسلق على الأشياء؟', risk: false },
+  { q: 'هل يحب طفلك اللعب بألعاب التخفي (peek-a-boo)؟', risk: false, positive: true },
+  { q: 'هل يُصدر طفلك أصواتًا غير طبيعية (نقر، طقطقة)؟', risk: true },
+  { q: 'هل يشير طفلك بإصبعه لطلب شيء ما؟', risk: false, positive: true },
+  { q: 'هل ينظر طفلك إلى وجهك حين تتحدث إليه؟', risk: false, positive: true },
+  { q: 'هل يتفاعل طفلك مع الأصوات المحيطة (لفت انتباهه)؟', risk: false, positive: true },
+];
+
+/* ============ AAC SYMBOLS ============ */
+const AAC_SYMBOLS = [
+  { label: 'نعم', emoji: '👍', voice: 'نعم، أريد ذلك' },
+  { label: 'لا', emoji: '✋', voice: 'لا، شكرا' },
+  { label: 'ماء', emoji: '💧', voice: 'أريد ماء' },
+  { label: 'طعام', emoji: '🍽️', voice: 'أنا جائع' },
+  { label: 'دواء', emoji: '💊', voice: 'أحتاج دواء' },
+  { label: 'حمام', emoji: '🚻', voice: 'أريد الذهاب إلى الحمام' },
+  { label: 'ألم', emoji: '😣', voice: 'أشعر بألم' },
+  { label: 'مساعدة', emoji: '🆘', voice: 'أحتاج مساعدة' },
+  { label: 'عائلي', emoji: '👨‍👩‍👧', voice: 'أريد رؤية عائلتي' },
+  { label: 'موسيقى', emoji: '🎵', voice: 'شغّل الموسيقى' },
+  { label: 'نوم', emoji: '😴', voice: 'أريد أن أنام' },
+  { label: 'شكرا', emoji: '🙏', voice: 'شكرا جزيلا' },
+];
+
+/* ============ ICONS ============ */
+const ICONS = {
+  back:'<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>',
+  next:'<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>',
+  check:'<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>',
+  mic:'<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-14 0M12 18v3m-4 0h8M12 14a3 3 0 003-3V5a3 3 0 00-6 0v6a3 3 0 003 3z"/></svg>',
+  warn:'<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M5 19h14a2 2 0 001.74-3L13.74 4a2 2 0 00-3.48 0l-7 12A2 2 0 005 19z"/></svg>',
+  brain:'🧠', user:'👤', cal:'📅', test:'📋', doc:'📄'
+};
+
+/* ===========================================================
+   MAIN RENDER
+   =========================================================== */
+function render() {
+  // Toggle header chrome based on auth state
+  const inApp = State.screen === 'app';
+  const headerEl = document.querySelector('header');
+  const mobileNav = document.querySelector('.lg\\:hidden.bg-white.border-b');
+  if(headerEl) headerEl.style.display = inApp ? '' : 'none';
+  if(mobileNav) mobileNav.style.display = inApp ? '' : 'none';
+  document.getElementById('app').classList.toggle('auth-bg', !inApp);
+
+  const app = document.getElementById('app');
+  switch(State.screen) {
+    case 'welcome':      app.innerHTML = renderWelcome(); attachWelcome(); break;
+    case 'auth':         app.innerHTML = renderAuth(); attachAuth(); break;
+    case 'role-select':  app.innerHTML = renderRoleSelect(); attachRoleSelect(); break;
+    case 'app':
+      switch(State.role) {
+        case 'slp':        app.innerHTML = renderSLP(); attachSLP(); break;
+        case 'parent':     app.innerHTML = renderParent(); attachParent(); break;
+        case 'student':    app.innerHTML = renderStudent(); attachStudent(); break;
+        case 'specialist': app.innerHTML = renderSpecialist(); attachSpecialist(); break;
+      }
+      updateHeaderForUser();
+      break;
+  }
+}
+
+function updateHeaderForUser(){
+  if(!State.user) return;
+  const name = State.user.name || 'مستخدم';
+  const roleLabel = State.role === 'slp' ? 'أخصائي نطق' :
+                    State.role === 'parent' ? 'ولي أمر' :
+                    State.role === 'student' ? 'طالب' : 'أخصائي طبي';
+  const n1 = document.getElementById('headerUserName');
+  const n2 = document.getElementById('headerUserRole');
+  const n3 = document.getElementById('menuUserName');
+  const n4 = document.getElementById('menuUserEmail');
+  const n5 = document.getElementById('menuProvider');
+  if(n1) n1.textContent = name;
+  if(n2) n2.textContent = roleLabel;
+  if(n3) n3.textContent = name;
+  if(n4) n4.textContent = State.user.email || '';
+  if(n5){
+    const map = {email:'📧 Email',google:'🟢 Google',icloud:'🍎 iCloud'};
+    n5.textContent = 'مسجّل عبر: ' + (map[State.provider] || State.provider);
+  }
+}
+
+function toggleUserMenu(){
+  const m = document.getElementById('userMenu');
+  if(m) m.classList.toggle('hidden');
+}
+function closeUserMenu(){
+  const m = document.getElementById('userMenu');
+  if(m) m.classList.add('hidden');
+}
+function changeRole(){
+  closeUserMenu();
+  State.screen = 'role-select';
+  render();
+}
+function logout(){
+  closeUserMenu();
+  State.screen = 'welcome';
+  State.user = null;
+  State.provider = null;
+  render();
+}
+document.addEventListener('click', e => {
+  const btn = document.getElementById('userMenuBtn');
+  const menu = document.getElementById('userMenu');
+  if(btn && menu && !btn.contains(e.target) && !menu.contains(e.target)){
+    menu.classList.add('hidden');
+  }
+});
+
+// Role switcher (delegated, since elements are re-rendered on every screen change)
+document.addEventListener('click', e => {
+  const btn = e.target.closest('[data-role]');
+  if(!btn) return;
+  if(State.screen !== 'app') return;
+  document.querySelectorAll('[data-role]').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll(`[data-role="${btn.dataset.role}"]`).forEach(x => x.classList.add('active'));
+  State.role = btn.dataset.role;
+  render();
+});
+
+// Language toggle (delegated)
+document.addEventListener('click', e => {
+  const t = e.target.closest('.lang-toggle');
+  if(!t) return;
+  document.querySelectorAll('.lang-toggle').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  State.lang = t.dataset.lang;
+});
+
+/* ===========================================================
+   WELCOME SCREEN
+   =========================================================== */
+function renderWelcome(){
+  return `
+  <div class="min-h-[80vh] flex items-center justify-center px-4">
+    <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <!-- Hero -->
+      <div class="text-center lg:text-right">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-semibold mb-4">
+          📋 منصة عيادية متخصصة
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 leading-tight">
+          مرحبًا بك في<br/>
+          <span class="bg-gradient-to-l from-teal-500 to-indigo-600 bg-clip-text text-transparent">TawasoL.assist</span>
+        </h1>
+        <p class="text-slate-600 mt-4 text-lg leading-relaxed">
+          منصة عيادية تفاعلية تربط بين الأخصائيين، الأولياء، الطلاب، والأخصائيين الطبيين.
+          تقييم، تشخيص، علاج، ومتابعة — كل ذلك في مكان واحد.
+        </p>
+        <div class="flex flex-wrap gap-3 mt-6 justify-center lg:justify-start">
+          <button onclick="State.screen='auth';render()" class="px-6 py-3 gradient-teal text-white rounded-xl font-bold text-base shadow-lg hover:shadow-xl transition flex items-center gap-2">
+            🚀 ابدأ الآن
+          </button>
+          <button onclick="State.screen='auth';State.provider='email';setTimeout(()=>loginDemo(),50);" class="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:border-teal-300 transition">
+            👀 جولة سريعة (Demo)
+          </button>
+        </div>
+        <div class="grid grid-cols-3 gap-3 mt-8 text-center">
+          <div class="bg-white/60 backdrop-blur rounded-xl p-3 border border-white/60">
+            <p class="text-2xl font-extrabold text-teal-600">4</p>
+            <p class="text-xs text-slate-600">واجهات متخصصة</p>
+          </div>
+          <div class="bg-white/60 backdrop-blur rounded-xl p-3 border border-white/60">
+            <p class="text-2xl font-extrabold text-indigo-600">5</p>
+            <p class="text-xs text-slate-600">خطوات إكلينيكية</p>
+          </div>
+          <div class="bg-white/60 backdrop-blur rounded-xl p-3 border border-white/60">
+            <p class="text-2xl font-extrabold text-rose-600">22+</p>
+            <p class="text-xs text-slate-600">اضطرابات DSM-5</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decorative panel -->
+      <div class="relative hidden lg:block">
+        <div class="floaty text-center">
+          <div class="w-72 h-72 mx-auto rounded-3xl gradient-teal shadow-2xl flex items-center justify-center text-9xl">🩺</div>
+          <div class="grid grid-cols-2 gap-3 mt-4">
+            <div class="glass rounded-2xl p-4 text-center">
+              <p class="text-3xl">🩺</p>
+              <p class="text-xs font-semibold mt-1">الأخصائي الأرطفوني</p>
+            </div>
+            <div class="glass rounded-2xl p-4 text-center">
+              <p class="text-3xl">👨‍👩‍👧</p>
+              <p class="text-xs font-semibold mt-1">ولي الأمر</p>
+            </div>
+            <div class="glass rounded-2xl p-4 text-center">
+              <p class="text-3xl">🎓</p>
+              <p class="text-xs font-semibold mt-1">طالب</p>
+            </div>
+            <div class="glass rounded-2xl p-4 text-center">
+              <p class="text-3xl">🧠</p>
+              <p class="text-xs font-semibold mt-1">أخصائي طبي</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+function attachWelcome(){}
+
+/* ===========================================================
+   AUTH SCREEN
+   =========================================================== */
+function renderAuth(){
+  return `
+  <div class="min-h-[80vh] flex items-center justify-center px-4 py-8">
+    <div class="max-w-md w-full">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 rounded-2xl gradient-teal mx-auto grid place-items-center text-3xl text-white mb-3">🩺</div>
+        <h2 class="text-3xl font-extrabold text-slate-800" id="authTitle">تسجيل الدخول</h2>
+        <p class="text-slate-500 mt-1" id="authSubtitle">الوصول إلى منصة TawasoL.assist</p>
+      </div>
+
+      <div class="glass rounded-2xl p-6 shadow-xl">
+        <!-- Tabs -->
+        <div class="flex bg-slate-100 rounded-xl p-1 mb-5">
+          <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-lg font-semibold text-sm tab-active">دخول</button>
+          <button id="tabSignup" onclick="switchAuthTab('signup')" class="flex-1 py-2 rounded-lg font-semibold text-sm">إنشاء حساب</button>
+        </div>
+
+        <form id="authForm" onsubmit="event.preventDefault(); submitAuth();" class="space-y-3">
+          <div id="nameField" class="hidden">
+            <label class="text-sm font-semibold text-slate-700">الاسم الكامل</label>
+            <input id="authName" type="text" placeholder="د. تومي كريمة" class="w-full mt-1 px-3 py-2.5 rounded-lg border border-slate-200 focus:border-teal-500 outline-none bg-white"/>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">البريد الإلكتروني</label>
+            <input id="authEmail" type="email" placeholder="you@example.com" class="w-full mt-1 px-3 py-2.5 rounded-lg border border-slate-200 focus:border-teal-500 outline-none bg-white" required/>
+          </div>
+          <div>
+            <label class="text-sm font-semibold text-slate-700">كلمة المرور</label>
+            <input id="authPassword" type="password" placeholder="••••••••" class="w-full mt-1 px-3 py-2.5 rounded-lg border border-slate-200 focus:border-teal-500 outline-none bg-white" required/>
+          </div>
+          <button type="submit" class="w-full py-3 gradient-teal text-white rounded-xl font-bold mt-2 hover:shadow-lg transition">
+            متابعة →
+          </button>
+        </form>
+
+        <div class="flex items-center gap-3 my-4">
+          <div class="flex-1 h-px bg-slate-200"></div>
+          <span class="text-xs text-slate-400">أو تابع باستخدام</span>
+          <div class="flex-1 h-px bg-slate-200"></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="loginWithProvider('google')" class="provider-btn flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold hover:border-slate-300">
+            <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.2-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35 26.7 36 24 36c-5.3 0-9.7-3.4-11.3-8l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4-4.1 5.3l6.2 5.2c-.4.4 6.6-4.8 6.6-14.5 0-1.2-.1-2.4-.4-3.5z"/></svg>
+            Google
+          </button>
+          <button onclick="loginWithProvider('icloud')" class="provider-btn flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold hover:border-slate-300">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.08zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+            Apple
+          </button>
+        </div>
+
+        <p class="text-xs text-slate-500 text-center mt-5">
+          بالمتابعة، فأنت توافق على <a class="text-teal-600 font-semibold cursor-pointer">شروط الاستخدام</a> و<a class="text-teal-600 font-semibold cursor-pointer">سياسة الخصوصية</a>.
+        </p>
+      </div>
+
+      <div class="text-center mt-4">
+        <button onclick="State.screen='welcome';render()" class="text-sm text-slate-500 hover:text-teal-600">→ العودة للصفحة الرئيسية</button>
+      </div>
+    </div>
+  </div>
+  `;
+}
+function attachAuth(){
+  // initial tab is 'login' (default)
+  const f = document.getElementById('nameField');
+  if(f) f.classList.add('hidden');
+}
+function switchAuthTab(tab){
+  const isSignup = tab === 'signup';
+  document.getElementById('tabLogin')?.classList.toggle('tab-active', !isSignup);
+  document.getElementById('tabSignup')?.classList.toggle('tab-active', isSignup);
+  const f = document.getElementById('nameField');
+  if(f) f.classList.toggle('hidden', !isSignup);
+  document.getElementById('authTitle').textContent = isSignup ? 'إنشاء حساب جديد' : 'تسجيل الدخول';
+}
+function submitAuth(){
+  const email = document.getElementById('authEmail')?.value || '';
+  const name = document.getElementById('authName')?.value || '';
+  if(!email){ alert('الرجاء إدخال البريد الإلكتروني'); return; }
+  State.provider = 'email';
+  State.user = {
+    name: name || email.split('@')[0],
+    email
+  };
+  State.screen = 'role-select';
+  render();
+}
+function loginWithProvider(provider){
+  State.provider = provider;
+  const demoName = provider === 'google' ? 'د. تومي كريمة (Google)' :
+                   provider === 'icloud' ? 'د. تومي كريمة (Apple)' : 'د. تومي كريمة';
+  State.user = {
+    name: demoName,
+    email: provider === 'google' ? 'tommy.karima@gmail.com' : provider === 'icloud' ? 'tommy@icloud.com' : 'tommy.karima@tawasol.app'
+  };
+  State.screen = 'role-select';
+  render();
+}
+function loginDemo(){
+  State.provider = 'email';
+  State.user = {name:'د. تومي كريمة', email:'tommy.karima@tawasol.app'};
+  State.screen = 'role-select';
+  render();
+}
+
+/* ===========================================================
+   ROLE SELECT SCREEN
+   =========================================================== */
+function renderRoleSelect(){
+  const name = State.user?.name || 'مستخدم';
+  return `
+  <div class="min-h-[80vh] flex items-center justify-center px-4 py-8">
+    <div class="max-w-5xl w-full">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 text-slate-700 text-sm font-semibold mb-3">
+          ✅ مرحبًا ${name}
+        </div>
+        <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800">اختر واجهتك</h2>
+        <p class="text-slate-500 mt-2">حدد الدور الذي يناسبك لتخصيص المنصة</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        ${[
+          {id:'slp',        i:'🩺', t:'الأخصائي الأرطفوني',    d:'إدارة الحالات، التقييم، وضع الخطط العلاجية', c:'teal'},
+          {id:'parent',     i:'👨‍👩‍👧', t:'ولي الأمر',        d:'متابعة نمو الطفل، تمارين منزلية، تقارير', c:'purple'},
+          {id:'student',    i:'🎓', t:'طالب',             d:'بنك الحالات، أوراق تقنية، تدريب أكاديمي', c:'amber'},
+          {id:'specialist', i:'🧠', t:'أخصائي طبي',       d:'استقبال إحالات ORL/Neuro/Psy، إشراف مشترك', c:'rose'},
+        ].map(r => `
+          <button data-role-pick="${r.id}" class="role-card text-right bg-white rounded-2xl p-5 border-2 border-slate-100 hover:border-${r.c}-300">
+            <div class="w-14 h-14 rounded-2xl bg-${r.c}-50 grid place-items-center text-3xl mb-3">${r.i}</div>
+            <p class="font-bold text-lg text-slate-800">${r.t}</p>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">${r.d}</p>
+            <div class="mt-4 flex items-center gap-1 text-${r.c}-600 text-sm font-semibold">
+              دخول ${ICONS.next}
+            </div>
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="text-center mt-6 text-sm text-slate-500">
+        يمكنك تغيير الواجهة لاحقًا من القائمة العلوية.
+      </div>
+    </div>
+  </div>
+  `;
+}
+function attachRoleSelect(){
+  document.querySelectorAll('[data-role-pick]').forEach(b => b.addEventListener('click', e => {
+    State.role = e.currentTarget.dataset.rolePick;
+    State.screen = 'app';
+    render();
+  }));
+}
+
+/* ===========================================================
+   SLP WORKSPACE
+   =========================================================== */
+function renderSLP() {
+  return `
+  <section class="mb-6">
+    <div class="card p-5 gradient-teal text-white">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <p class="text-sm opacity-90">مرحبًا بعودتك</p>
+          <h2 class="text-2xl font-extrabold">د. تومي كريمة — الأخصائي الأرطفوني</h2>
+          <p class="text-sm opacity-90 mt-1">لديك ${State.notifications} تنبيهات و 4 مواعيد اليوم</p>
+        </div>
+        <div class="flex gap-2">
+          <div class="bg-white/15 rounded-xl px-4 py-2">
+            <p class="text-xs opacity-80">حالات نشطة</p>
+            <p class="font-bold text-xl">28</p>
+          </div>
+          <div class="bg-white/15 rounded-xl px-4 py-2">
+            <p class="text-xs opacity-80">جلسات هذا الأسبوع</p>
+            <p class="font-bold text-xl">14</p>
+          </div>
+          <div class="bg-white/15 rounded-xl px-4 py-2">
+            <p class="text-xs opacity-80">تقييمات قيد الإجراء</p>
+            <p class="font-bold text-xl">6</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+    <!-- LEFT: disorders & tests & wizard -->
+    <div class="lg:col-span-2 space-y-5">
+
+      ${renderDisorderPortfolio()}
+      ${renderAssessmentPortfolio()}
+      ${renderLiveTestPanel()}
+      ${renderLiveTestRunner()}
+      ${renderClinicalWizard()}
+
+    </div>
+
+    <!-- RIGHT: calendar, referrals, monitoring -->
+    <div class="space-y-5">
+      ${renderCalendar()}
+      ${renderReferrals()}
+      ${renderCaseMonitoring()}
+    </div>
+  </div>
+  `;
+}
+
+/* ---- DISORDER PORTFOLIO ---- */
+function renderDisorderPortfolio() {
+  return `
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-lg flex items-center gap-2">📚 حقيبة الاضطرابات (Disorder Portfolio)</h3>
+      <span class="chip bg-teal-50 text-teal-700">DSM-5 / CIM-11</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="disorderGrid">
+      ${Object.entries(DISORDERS).map(([key,cat]) => `
+        <button data-cat="${key}" class="disorder-cat text-right p-3 rounded-xl border-2 border-slate-100 hover:border-teal-300 transition flex items-center justify-between">
+          <div>
+            <p class="font-semibold text-sm">${cat.icon} ${cat.label}</p>
+            <p class="text-xs text-slate-500">${cat.items.length} اضطرابات</p>
+          </div>
+          ${ICONS.next}
+        </button>
+      `).join('')}
+    </div>
+  </div>
+  `;
+}
+
+function attachSLP() {
+  // Live test buttons
+  document.querySelectorAll('[data-live-test]').forEach(b => b.addEventListener('click', e => {
+    const id = parseInt(e.currentTarget.dataset.liveTest);
+    startLiveTest(id);
+  }));
+
+  document.querySelectorAll('.disorder-cat').forEach(b => b.addEventListener('click', e => {
+    const cat = DISORDERS[e.currentTarget.dataset.cat];
+    showModal(`
+      <div class="p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold">${cat.icon} ${cat.label}</h3>
+          <button onclick="closeModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 grid place-items-center">✕</button>
+        </div>
+        <div class="space-y-3">
+          ${cat.items.map(d => `
+            <details class="bg-slate-50 rounded-xl p-4">
+              <summary class="flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-slate-800">${d.name}</p>
+                  <p class="text-xs text-slate-500">${d.en || ''} · ${d.dsm}</p>
+                </div>
+                <span class="text-slate-400">▼</span>
+              </summary>
+              <div class="mt-3 space-y-2 text-sm">
+                <div>
+                  <p class="font-semibold text-teal-700">معايير التشخيص:</p>
+                  <ul class="list-disc pr-5 text-slate-600">
+                    ${d.criteria.map(c => `<li>${c}</li>`).join('')}
+                  </ul>
+                </div>
+                <div>
+                  <p class="font-semibold text-amber-700">التشخيص التفريقي (Differential):</p>
+                  <p class="text-slate-600">${d.differential}</p>
+                </div>
+              </div>
+            </details>
+          `).join('')}
+        </div>
+      </div>
+    `);
+  }));
+
+  // Tabs (Clinical wizard)
+  document.querySelectorAll('[data-wizard-tab]').forEach(t => t.addEventListener('click', e => {
+    document.querySelectorAll('[data-wizard-tab]').forEach(x => x.classList.remove('tab-active','bg-slate-100'));
+    e.currentTarget.classList.add('tab-active');
+    State.caseStep = parseInt(e.currentTarget.dataset.wizardTab);
+    render();
+  }));
+
+  // Test click (functional assessments)
+  document.querySelectorAll('[data-test]').forEach(b => b.addEventListener('click', e => {
+    const test = ASSESSMENTS.find(t => t.id == e.currentTarget.dataset.test);
+    if(!test.functional) {
+      showModal(`
+        <div class="p-5">
+          <h3 class="text-xl font-bold mb-2">${test.name}</h3>
+          <p class="text-sm text-slate-500 mb-3">${test.en} · مجال: ${test.domain}</p>
+          <p class="text-slate-600">${test.adapted ? '✅ اختبار مُكيَّف' : '❌ غير مُكيَّف'} · الفئة العمرية: ${test.age}</p>
+          <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+            <strong>ملاحظة:</strong> هذا الاختبار غير مفعّل بالكامل في النموذج الأولي. للمتابعة، تواصل مع مزود الاختبار.
+          </div>
+        </div>
+      `);
+    } else {
+      // Functional: open quick test interface
+      showModal(`
+        <div class="p-5">
+          <h3 class="text-xl font-bold mb-2">${test.name}</h3>
+          <p class="text-sm text-slate-500 mb-3">${test.en}</p>
+          <div class="bg-teal-50 border border-teal-200 rounded-xl p-4 text-center">
+            <p class="text-teal-700 font-bold mb-2">🟢 الاختبار جاهز للتطبيق</p>
+            <p class="text-sm text-slate-600 mb-3">ابدأ جلسة الاختبار مع المريض</p>
+            <button onclick="closeModal(); startFunctionalTest(${test.id})" class="px-4 py-2 gradient-teal text-white rounded-xl font-semibold">بدء جلسة التقييم</button>
+          </div>
+        </div>
+      `);
+    }
+  }));
+
+  // M-CHAT (parent)
+  document.querySelectorAll('[data-mchat]').forEach(c => c.addEventListener('click', e => {
+    const idx = parseInt(e.currentTarget.dataset.mchat);
+    const risk = MCHAT_QUESTIONS[idx].risk;
+    const positive = MCHAT_QUESTIONS[idx].positive;
+    if(risk){
+      // Yes = fail (1 pt) ; No = pass
+      State.mchatScore += e.currentTarget.dataset.ans === 'yes' ? 1 : 0;
+    }
+    if(positive){
+      // No = fail
+      State.mchatScore += e.currentTarget.dataset.ans === 'no' ? 1 : 0;
+    }
+    State.mchatAnswered++;
+    e.currentTarget.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+    e.currentTarget.classList.add('opacity-50');
+    document.getElementById('mchatScore').textContent = State.mchatScore;
+    document.getElementById('mchatProgress').textContent = `${State.mchatAnswered}/${MCHAT_QUESTIONS.length}`;
+    document.getElementById('mchatProgressBar').style.width = `${(State.mchatAnswered/MCHAT_QUESTIONS.length)*100}%`;
+    if(State.mchatAnswered === MCHAT_QUESTIONS.length){
+      showMchatResult();
+    }
+  }));
+
+  // Gamification objects
+  document.querySelectorAll('[data-game-obj]').forEach(b => b.addEventListener('click', e => {
+    e.currentTarget.classList.add('object-card');
+    // Simulate: 70% correct
+    const correct = Math.random() > 0.3;
+    e.currentTarget.classList.add(correct ? 'correct' : 'wrong');
+    const animal = document.getElementById('animalEmoji');
+    const lbl = document.getElementById('animalLabel');
+    if(correct){
+      animal.textContent = '🐰';
+      animal.className = 'animal-emoji animal-happy';
+      lbl.textContent = '🎉 أحسنت! أرنب يحتفل!';
+      lbl.className = 'font-bold text-emerald-600';
+    } else {
+      animal.textContent = '😢';
+      animal.className = 'animal-emoji animal-sad';
+      lbl.textContent = 'حاول مرة أخرى! لاحظ الإبدال (س ← ت)';
+      lbl.className = 'font-bold text-rose-600';
+    }
+    setTimeout(() => { animal.className = 'animal-emoji'; }, 2000);
+  }));
+
+  // AAC buttons
+  document.querySelectorAll('[data-aac]').forEach(b => b.addEventListener('click', e => {
+    const sym = AAC_SYMBOLS.find(s => s.label === e.currentTarget.dataset.aac);
+    const speech = window.speechSynthesis;
+    const u = new SpeechSynthesisUtterance(sym.voice);
+    u.lang = 'ar-SA';
+    speech.speak(u);
+    const bubble = document.getElementById('aacBubble');
+    bubble.textContent = sym.voice;
+    bubble.classList.remove('opacity-0');
+    bubble.classList.add('opacity-100');
+    setTimeout(() => bubble.classList.replace('opacity-100','opacity-0'), 2500);
+  }));
+}
+
+function showMchatResult() {
+  const score = State.mchatScore;
+  const high = score >= 3;
+  showModal(`
+    <div class="p-6">
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full ${high?'bg-rose-100':'bg-emerald-100'} grid place-items-center text-4xl mx-auto mb-3">${high?'⚠️':'✅'}</div>
+        <h3 class="text-2xl font-bold mb-2">نتيجة M-CHAT</h3>
+        <p class="text-5xl font-extrabold ${high?'text-rose-600':'text-emerald-600'} mb-2">${score}/8</p>
+        <p class="text-slate-600">${high?'درجة عالية الخطورة — يُنصح بإجراء تقييم متخصص فوري':'درجة منخفضة — المتابعة الدورية'}</p>
+      </div>
+      ${high?`
+        <div class="mt-5 p-4 bg-rose-50 border-2 border-rose-300 rounded-xl">
+          <div class="flex items-start gap-3">
+            <div class="text-rose-600">${ICONS.warn}</div>
+            <div>
+              <p class="font-bold text-rose-800">⚠️ تحذير بخطر الإصابة بالتوحد</p>
+              <p class="text-sm text-rose-700 mt-1">
+                بناءً على إجاباتك، نوصي بشدة بإجراء تقييم متخصص من طبيب أعصاب أطفال أو أخصائي نمو. 
+                لا يعني هذا التشخيص، لكنه مؤشر يستدعي المتابعة. تواصل مع الأخصائي الأرطفوني لتحديد موعد.
+              </p>
+            </div>
+          </div>
+        </div>
+        <button onclick="closeModal()" class="w-full mt-4 py-3 gradient-rose text-white rounded-xl font-bold">تحديد موعد مع الأخصائي</button>
+      `:`
+        <button onclick="closeModal()" class="w-full mt-4 py-3 gradient-emerald text-white rounded-xl font-bold">حسنًا</button>
+      `}
+    </div>
+  `);
+}
+
+function startFunctionalTest(id) {
+  State.caseStep = 2;
+  State.role = 'slp';
+  render();
+  document.querySelector('[data-wizard-tab="2"]')?.click();
+}
+
+/* ---- ASSESSMENT PORTFOLIO ---- */
+function renderAssessmentPortfolio() {
+  return `
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-lg flex items-center gap-2">📋 حقيبة الاختبارات العصبية-النفسية</h3>
+      <span class="chip bg-purple-50 text-purple-700">8 اختبارات</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+      ${ASSESSMENTS.map(t => `
+        <button data-test="${t.id}" class="text-right p-3 rounded-xl border border-slate-200 hover:border-teal-300 hover:bg-teal-50/40 transition flex items-center justify-between gap-2 group">
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-sm truncate">${t.name}</p>
+            <p class="text-xs text-slate-500 truncate">${t.en} · ${t.domain}</p>
+            <div class="flex gap-1 mt-1 flex-wrap">
+              <span class="badge ${t.adapted?'bg-emerald-100 text-emerald-700':'bg-slate-100 text-slate-600'}">${t.adapted?'مُكيَّف':'غير مُكيَّف'}</span>
+              <span class="badge ${t.functional?'bg-teal-100 text-teal-700':'bg-slate-100 text-slate-600'}">${t.functional?'🟢 نشط':'⚪ غير مفعّل'}</span>
+              <span class="badge bg-amber-50 text-amber-700">${t.age}</span>
+            </div>
+          </div>
+          <span class="text-slate-300 group-hover:text-teal-500">${ICONS.next}</span>
+        </button>
+      `).join('')}
+    </div>
+  </div>
+  `;
+}
+
+/* ---- LIVE TEST SIMULATION (محاكاة تجريبية فعلية) ---- */
+function renderLiveTestPanel(){
+  return `
+  <div class="card p-5 border-2 border-indigo-200">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-lg flex items-center gap-2">🧪 محاكاة تجريبية للاختبارات (Live Test Runner)</h3>
+      <span class="chip bg-indigo-50 text-indigo-700">تفاعلي</span>
+    </div>
+    <p class="text-sm text-slate-600 mb-3">اختر اختبارًا نشطًا وابدأ جلسة تقييم فعلية مع مريض تجريبي.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      ${ASSESSMENTS.filter(t => t.functional).map(t => `
+        <button data-live-test="${t.id}" class="text-right p-4 rounded-xl border-2 border-indigo-100 hover:border-indigo-400 hover:bg-indigo-50/30 transition">
+          <div class="flex items-center justify-between mb-1">
+            <p class="font-bold text-slate-800">${t.name}</p>
+            <span class="text-2xl">🟢</span>
+          </div>
+          <p class="text-xs text-slate-500">${t.en}</p>
+          <p class="text-xs text-indigo-600 mt-2 font-semibold">⏱ 5-7 دقائق · ${t.domain}</p>
+        </button>
+      `).join('')}
+    </div>
+  </div>
+  `;
+}
+
+function renderLiveTestRunner(){
+  if(!State.liveTest) return '';
+  const test = State.liveTest;
+  const t = ASSESSMENTS.find(a => a.id === test.testId);
+  if(!t) return '';
+  const items = test.items;
+  const total = items.length;
+  const pct = Math.round((test.currentIdx / total) * 100);
+  const current = items[test.currentIdx];
+  const answers = test.answers;
+
+  return `
+  <div class="card p-5 border-2 border-indigo-300">
+    <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+      <div>
+        <h3 class="font-bold text-lg flex items-center gap-2">🧪 ${t.name}</h3>
+        <p class="text-xs text-slate-500">${t.en} · ${t.domain} · مريض: ${test.patientName}</p>
+      </div>
+      <button onclick="cancelLiveTest()" class="text-xs px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-100">✕ إلغاء</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="mb-4">
+      <div class="flex items-center justify-between text-xs mb-1">
+        <span class="text-slate-600">السؤال ${Math.min(test.currentIdx+1,total)} / ${total}</span>
+        <span class="font-bold text-indigo-600">${pct}%</span>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+        <div class="bg-indigo-500 h-2 progress-bar-anim" style="width:${pct}%"></div>
+      </div>
+    </div>
+
+    ${test.currentIdx < total ? `
+      <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
+        <p class="text-xs text-indigo-700 font-semibold mb-1">البند ${test.currentIdx+1} — ${current.type}</p>
+        <p class="font-bold text-slate-800 text-lg mb-3">${current.prompt}</p>
+        ${current.image ? `<p class="text-5xl text-center my-3">${current.image}</p>` : ''}
+        ${current.context ? `<p class="text-sm text-slate-600 mb-3 italic">${current.context}</p>` : ''}
+        <div class="grid grid-cols-1 md:grid-cols-${current.options ? current.options.length : 2} gap-2">
+          ${current.options ? current.options.map((o,i) => `
+            <button data-live-answer="${i}" class="test-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-indigo-400">
+              <p class="text-2xl">${o.icon || ''}</p>
+              <p class="font-semibold text-sm">${o.label}</p>
+            </button>
+          `).join('') : `
+            <button data-live-answer="correct" class="test-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-emerald-400">✓ نطقه صحيح</button>
+            <button data-live-answer="wrong" class="test-option p-3 rounded-lg border-2 border-slate-200 text-center hover:border-rose-400">✗ إبدال أو خطأ</button>
+          `}
+        </div>
+        <p class="text-xs text-slate-500 mt-3 text-center">💡 النص: ${current.hint || 'انتظر رد فعل المريض التجريبي، ثم سجّل ملاحظتك.'}</p>
+      </div>
+    ` : `
+      <div class="bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5 text-center">
+        <p class="text-5xl mb-2">🎉</p>
+        <p class="font-bold text-emerald-800 text-lg">اكتمل الاختبار!</p>
+        <p class="text-slate-600 mt-1">النتيجة: <span class="font-bold text-2xl text-emerald-700">${answers.correct}/${total}</span> (${Math.round(answers.correct/total*100)}%)</p>
+        <div class="flex flex-wrap gap-2 justify-center mt-4">
+          <button onclick="finishLiveTest()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold">حفظ في السجل</button>
+          <button onclick="restartLiveTest(${t.id})" class="px-4 py-2 bg-white border border-slate-200 rounded-lg font-semibold">إعادة الاختبار</button>
+        </div>
+      </div>
+    `}
+  </div>
+  `;
+}
+
+function startLiveTest(id){
+  const t = ASSESSMENTS.find(a => a.id === id);
+  if(!t || !t.functional) return;
+  // Different test banks for the 2 functional tests
+  const banks = {
+    1: [ // BNT - picture naming
+      {type:'تسمية', prompt:'ما اسم هذه الصورة؟', image:'🌳', context:'الفئة: أشياء طبيعية', options:[{label:'شجرة',icon:'✅',correct:true},{label:'تعرة',icon:'❌',correct:false},{label:'تعرة',icon:'❌',correct:false},{label:'سجرة',icon:'❌',correct:false}], hint:'لاحظ الإبدال (ش ← ت)'},
+      {type:'تسمية', prompt:'ما اسم هذه الصورة؟', image:'🦓', context:'الفئة: حيوانات', options:[{label:'حمار وحشي',icon:'✅',correct:true},{label:'تحمار وحشي',icon:'❌',correct:false},{label:'حمار وسحي',icon:'❌',correct:false},{label:'تمار وتحي',icon:'❌',correct:false}], hint:'لاحظ الإبدال (ح ← ت) و(ز ← ت)'},
+      {type:'تسمية', prompt:'ما اسم هذه الصورة؟', image:'🦁', context:'الفئة: حيوانات', options:[{label:'أسد',icon:'✅',correct:true},{label:'أشد',icon:'❌',correct:false},{label:'أسد',icon:'✅',correct:true},{label:'أست',icon:'❌',correct:false}], hint:'لاحظ الإبدال (س ← ت)'},
+      {type:'تسمية', prompt:'ما اسم هذه الصورة؟', image:'⏰', context:'الفئة: أشياء منزلية', options:[{label:'ساعة',icon:'✅',correct:true},{label:'تاعة',icon:'❌',correct:false},{label:'ساهة',icon:'❌',correct:false},{label:'تاهة',icon:'❌',correct:false}], hint:'لاحظ الإبدال (س ← ت) في البداية'},
+      {type:'تسمية', prompt:'ما اسم هذه الصورة؟', image:'🛁', context:'الفئة: أثاث', options:[{label:'سرير',icon:'✅',correct:true},{label:'تريير',icon:'❌',correct:false},{label:'سريير',icon:'❌',correct:false},{label:'تاعير',icon:'❌',correct:false}], hint:'لاحظ الإبدال (س ← ت)'},
+      {type:'تسمية', prompt:'ما اسم هذه الصورة؟', image:'🪑', context:'الفئة: أثاث', options:[{label:'كرسي',icon:'✅',correct:true},{label:'كرتي',icon:'❌',correct:false},{label:'كرثي',icon:'❌',correct:false},{label:'كرسي',icon:'✅',correct:true}], hint:'لاحظ الإبدال (س ← ث)'},
+    ],
+    3: [ // CELF-5 - receptive & expressive
+      {type:'استقبالي', prompt:'أشر إلى: "القطة الكبيرة"', image:'🐱', options:[{label:'قطة كبيرة',icon:'✅',correct:true},{label:'قطة صغيرة',icon:'❌',correct:false},{label:'قطة نائمة',icon:'❌',correct:false}], hint:'اختر الصورة التي تطابق الجملة'},
+      {type:'استقبالي', prompt:'أشر إلى: "الولد الذي يأكل تفاحة"', image:'👦', options:[{label:'ولد + تفاحة',icon:'✅',correct:true},{label:'بنت + تفاحة',icon:'❌',correct:false},{label:'ولد + برتقالة',icon:'❌',correct:false}], hint:'لاحظ الجنس + الفاكهة'},
+      {type:'تعبيري', prompt:'أكمل الجملة: "الولد يجلس على ..."', image:'🪑', context:'يتوقع الإجابة: "كرسي" أو "أرض"', options:[{label:'كرسي',icon:'✅',correct:true},{label:'تريير',icon:'❌',correct:false}], hint:'لاحظ الإبدال في الإجابة'},
+      {type:'تعبيري', prompt:'صف هذه الصورة بجملة واحدة:', image:'🐕🦴', context:'صورة لكلب يأكل عظمة', options:[{label:'الكلب يأكل عظمة',icon:'✅',correct:true},{label:'الكلب ياكل عومة',icon:'❌',correct:false},{label:'الكلب يلعب',icon:'❌',correct:false}], hint:'لاحظ إبدال (ع ← ع) صحيح، (أ ← ي) خاطئ'},
+      {type:'تعبيري', prompt:'ما الذي يحدث في هذه الصورة؟', image:'☔👧', context:'بنت تحت المطر', options:[{label:'البنت تمشي تحت المطر',icon:'✅',correct:true},{label:'البنت تنطر',icon:'❌',correct:false},{label:'البنت نائمة',icon:'❌',correct:false}], hint:'لاحظ ترتيب الكلمات'},
+      {type:'تعبيري', prompt:'سمّ كل ما تراه في الصورة:', image:'🌳🦋🐦', context:'صورة حديقة', options:[{label:'شجرة، فراشة، عصفور',icon:'✅',correct:true},{label:'تعرة، فراشة، عصفور',icon:'❌',correct:false},{label:'شجرة، فراشة، عصفوو',icon:'❌',correct:false}], hint:'لاحظ الإبدال في الكلمات'},
+    ],
+  };
+  const items = banks[id] || banks[1];
+  State.liveTest = {
+    testId: id,
+    patientName: 'سامي بن كريم (تجريبي)',
+    items,
+    currentIdx: 0,
+    answers: { correct: 0, wrong: 0, wrongWords: [] }
+  };
+  render();
+  attachLiveTest();
+}
+
+function attachLiveTest(){
+  document.querySelectorAll('[data-live-answer]').forEach(b => b.addEventListener('click', e => {
+    if(!State.liveTest) return;
+    const items = State.liveTest.items;
+    const idx = State.liveTest.currentIdx;
+    const current = items[idx];
+    let correct = false;
+    let wrongWord = null;
+    if(current.options){
+      const i = parseInt(e.currentTarget.dataset.liveAnswer);
+      correct = !!current.options[i].correct;
+      if(!correct) wrongWord = current.options[i].label;
+    } else {
+      correct = e.currentTarget.dataset.liveAnswer === 'correct';
+    }
+    if(correct) State.liveTest.answers.correct++;
+    else {
+      State.liveTest.answers.wrong++;
+      if(wrongWord) State.liveTest.answers.wrongWords.push({prompt:current.prompt, given:wrongWord});
+    }
+    // visual feedback
+    e.currentTarget.classList.add(correct ? '!bg-emerald-100 !border-emerald-500' : '!bg-rose-100 !border-rose-500');
+    setTimeout(() => {
+      State.liveTest.currentIdx++;
+      render();
+      attachLiveTest();
+    }, 700);
+  }));
+}
+function cancelLiveTest(){
+  State.liveTest = null;
+  render();
+}
+function finishLiveTest(){
+  const t = ASSESSMENTS.find(a => a.id === State.liveTest.testId);
+  const a = State.liveTest.answers;
+  const total = State.liveTest.items.length;
+  const pct = Math.round(a.correct/total*100);
+  showModal(`
+    <div class="p-5 text-center">
+      <div class="text-5xl mb-2">📊</div>
+      <h3 class="font-bold text-xl mb-2">نتيجة ${t.name}</h3>
+      <p class="text-slate-600 mb-2">المريض: ${State.liveTest.patientName}</p>
+      <div class="grid grid-cols-3 gap-2 my-3">
+        <div class="bg-emerald-50 p-3 rounded-lg"><p class="text-2xl font-bold text-emerald-700">${a.correct}</p><p class="text-xs">صحيح</p></div>
+        <div class="bg-rose-50 p-3 rounded-lg"><p class="text-2xl font-bold text-rose-700">${a.wrong}</p><p class="text-xs">خطأ</p></div>
+        <div class="bg-indigo-50 p-3 rounded-lg"><p class="text-2xl font-bold text-indigo-700">${pct}%</p><p class="text-xs">دقة</p></div>
+      </div>
+      ${a.wrongWords.length ? `
+        <div class="text-right bg-amber-50 border border-amber-200 rounded-lg p-3 mt-3 text-sm">
+          <p class="font-bold text-amber-800 mb-1">⚠️ الكلمات التي بها إبدال:</p>
+          <ul class="list-disc pr-5 text-amber-900">
+            ${a.wrongWords.map(w => `<li>${w.prompt} → "${w.given}"</li>`).join('')}
+          </ul>
+        </div>
+      `:''}
+      <p class="text-sm text-slate-600 mt-3">✅ تم حفظ النتيجة في سجل المريض</p>
+      <button onclick="State.liveTest=null;closeModal();render()" class="mt-4 px-4 py-2 gradient-teal text-white rounded-lg font-semibold">حسنًا</button>
+    </div>
+  `);
+}
+function restartLiveTest(id){
+  startLiveTest(id);
+}
+
+/* ---- CLINICAL WIZARD ---- */
+function renderClinicalWizard() {
+  return `
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-bold text-lg flex items-center gap-2">🧭 عملية التقييم والمتابعة (5 خطوات)</h3>
+      <span class="chip bg-rose-50 text-rose-700">حالة: سامي (4.5 سنوات)</span>
+    </div>
+
+    <!-- Step progress -->
+    <div class="flex items-center justify-between gap-1 mb-5 overflow-x-auto">
+      ${[
+        {n:1,t:'التاريخ المرضي',i:'📝'},
+        {n:2,t:'التقييم السريري للنطق',i:'🩺'},
+        {n:3,t:'الإحالات التكميلية',i:'🔗'},
+        {n:4,t:'التشخيص التفريقي',i:'⚖️'},
+        {n:5,t:'القرار النهائي والخطة',i:'📄'},
+      ].map((s,i) => `
+        <button data-wizard-tab="${s.n}" class="flex flex-col items-center min-w-fit px-2 group">
+          <div class="step-dot ${State.caseStep===s.n?'active':State.caseStep>s.n?'done':'pending'}">${State.caseStep>s.n?'✓':s.n}</div>
+          <p class="text-[10px] mt-1 font-semibold ${State.caseStep===s.n?'text-teal-700':'text-slate-500'}">${s.i} ${s.t}</p>
+        </button>
+        ${i<4?'<div class="flex-1 h-0.5 bg-slate-200"></div>':''}
+      `).join('')}
+    </div>
+
+    <div id="wizardBody" class="scroll-fade">
+      ${renderWizardStep()}
+    </div>
+  </div>
+  `;
+}
+
+function renderWizardStep() {
+  switch(State.caseStep) {
+    case 1: return renderStep1History();
+    case 2: return renderStep2Assessment();
+    case 3: return renderStep3Referrals();
+    case 4: return renderStep4Differential();
+    case 5: return renderStep5Report();
+  }
+}
+
+/* --- STEP 1 --- */
+function renderStep1History() {
+  return `
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="lg:col-span-2 space-y-3">
+      <h4 class="font-bold text-slate-800">📝 تاريخ الحالة (Anamnèse) — سامي، 4.5 سنوات</h4>
+      <div class="grid grid-cols-2 gap-3 text-sm">
+        <div>
+          <label class="text-xs text-slate-500">الاسم الكامل</label>
+          <input value="سامي بن كريم" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 focus:border-teal-500 outline-none"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">تاريخ الميلاد</label>
+          <input value="2021-11-12" type="date" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 focus:border-teal-500 outline-none"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">الجنس</label>
+          <select class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200"><option>ذكر</option><option>أنثى</option></select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">المُعرِّف</label>
+          <input value="CASE-2026-048" disabled class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-slate-50"/>
+        </div>
+        <div class="col-span-2">
+          <label class="text-xs text-slate-500">الشكوى الرئيسية</label>
+          <textarea class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 focus:border-teal-500 outline-none" rows="2">تأخر في النطق منذ سن 3 سنوات، صعوبة في نطق حرف السين وإبداله بحرف التاء.</textarea>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">الحمل والولادة</label>
+          <select class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200"><option>طبيعي</option><option>مخاض طويل</option><option>قيصرية</option></select>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">وزن الولادة</label>
+          <input value="3.2 كغ" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">مراحل النمو الحركي</label>
+          <input value="طبيعية — الجلوس 6 أشهر، المشي 12 شهرًا" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">مراحل النمو اللغوي</label>
+          <input value="متأخرة — أول كلمة 18 شهرًا، جمل من كلمتين 3 سنوات" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200 bg-amber-50"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">التاريخ العائلي</label>
+          <input value="لا توجد حالات تأخر لغوي معروفة" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200"/>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">الأدوية الحالية</label>
+          <input value="لا يوجد" class="w-full mt-1 px-3 py-2 rounded-lg border border-slate-200"/>
+        </div>
+      </div>
+      <div class="flex justify-between pt-2">
+        <button class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600">حفظ مسودة</button>
+        <button onclick="State.caseStep=2;render()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold flex items-center gap-2">التالي: التقييم السريري ${ICONS.next}</button>
+      </div>
+    </div>
+    <div>
+      <h4 class="font-bold text-slate-800 mb-2">📅 رزنامة المقابلات</h4>
+      <div class="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl p-3">
+        <div class="flex items-center justify-between mb-2">
+          <button class="text-slate-500">‹</button>
+          <p class="font-semibold text-sm">يونيو 2026</p>
+          <button class="text-slate-500">›</button>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center text-xs text-slate-500 mb-1">
+          ${['ح','ن','ث','ر','خ','ج','س'].map(d => `<p class="font-semibold">${d}</p>`).join('')}
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center text-sm">
+          ${Array.from({length:30},(_,i)=>i+1).map(d => {
+            const event = [3,7,12,18,22,27].includes(d);
+            const today = d === 9;
+            return `<div class="aspect-square grid place-items-center rounded-lg ${event?'bg-teal-500 text-white font-bold cursor-pointer hover:bg-teal-600':today?'bg-rose-100 text-rose-700 font-bold':'hover:bg-slate-100 cursor-pointer'}">${d}</div>`;
+          }).join('')}
+        </div>
+        <div class="mt-3 space-y-2 text-xs">
+          <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-teal-500"></span> لقاء مع الأولياء</div>
+          <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-rose-300"></span> اليوم</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+/* --- STEP 2 --- */
+function renderStep2Assessment() {
+  return `
+  <div class="space-y-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Anatomical checklist -->
+      <div>
+        <h4 class="font-bold text-slate-800 mb-2">🦷 فحص تشريحي/وظيفي</h4>
+        <div class="space-y-1 text-sm bg-slate-50 rounded-xl p-3">
+          ${[
+            {n:'الشفاه (لثام / كفاءة الإغلاق)', v:'طبيعي'},
+            {n:'اللسان (الحركة، البراعم اللسانية)', v:'طبيعي'},
+            {n:'الحنك الرخو والصلب', v:'طبيعي'},
+            {n:'الأسنان والإطباق', v:'طبيعي'},
+            {n:'وظيفة التنفس (شفهي/أنفي)', v:'مختلط - يحتاج تدريب'},
+            {n:'جودة الصوت (حدة، نبرة، شدة)', v:'طبيعي'},
+          ].map(c => `
+            <div class="checklist-item p-2 rounded-lg flex items-center justify-between">
+              <span>${c.n}</span>
+              <select class="text-xs px-2 py-1 rounded border border-slate-200">
+                <option>طبيعي</option><option>شذوذ بسيط</option><option>شذوذ واضح</option>
+              </select>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Phonetic chart -->
+      <div>
+        <h4 class="font-bold text-slate-800 mb-2">🔤 الجدول الفونيتيكي (Phonetic Chart)</h4>
+        <div class="bg-slate-50 rounded-xl p-3 max-h-72 overflow-y-auto">
+          <p class="text-xs font-semibold text-slate-500 mb-2">الحروف الساكنة — Consonants</p>
+          <div class="grid grid-cols-4 gap-1 text-center text-xs">
+            ${PHONETIC_CHART.consonants.map(p => `
+              <div title="${p.pos} - ${p.manner}" class="p-1.5 rounded bg-white border border-slate-200 hover:border-teal-400 cursor-pointer">
+                <p class="text-lg font-bold text-slate-800">${p.ar}</p>
+                <p class="text-slate-500 text-[10px]">${p.fr}</p>
+              </div>
+            `).join('')}
+          </div>
+          <p class="text-xs font-semibold text-slate-500 mb-2 mt-3">الحروف المتحركة — Vowels</p>
+          <div class="grid grid-cols-3 gap-1 text-center text-xs">
+            ${PHONETIC_CHART.vowels.map(p => `
+              <div class="p-2 rounded bg-white border border-slate-200">
+                <p class="text-base font-bold text-slate-800">${p.ar}</p>
+                <p class="text-slate-500 text-[10px]">/${p.fr}/</p>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Standardized test -->
+    <div class="border-t border-slate-200 pt-4">
+      <h4 class="font-bold text-slate-800 mb-3">🧪 اختبارات اللغة المعيارية — اختر الاختبار</h4>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        ${[
+          {n:'اللغة الاستقبالية',i:'👂',c:false},
+          {n:'اللغة التعبيرية',i:'🗣️',c:true,sel:true},
+          {n:'المفردات',i:'📖',c:false},
+          {n:'الطلاقة',i:'💧',c:false},
+        ].map(t => `
+          <button class="p-3 rounded-xl border-2 ${t.sel?'border-teal-500 bg-teal-50':'border-slate-200 hover:border-teal-300'} text-right">
+            <p class="text-2xl">${t.i}</p>
+            <p class="font-semibold text-sm mt-1">${t.n}</p>
+            ${t.sel?'<span class="badge bg-teal-500 text-white mt-1">✓ مُحدد</span>':''}
+          </button>
+        `).join('')}
+      </div>
+
+      <!-- Recording interface -->
+      <div class="mt-4 p-4 bg-gradient-to-br from-rose-50 to-amber-50 rounded-xl border border-rose-200">
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <p class="font-bold text-slate-800">🎙️ اختبار تسمية — حرف "س" في 3 مواضع</p>
+            <p class="text-xs text-slate-600 mt-1">سيُطلب من سامي تسمية صور تحتوي على حرف السين</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-500">المدة: <span id="recSeconds">0:00</span></span>
+            <button id="recBtn" onclick="toggleRecording()" class="${State.recording?'recording-pulse bg-rose-600':'gradient-teal'} text-white w-12 h-12 rounded-full grid place-items-center hover:scale-105 transition">
+              ${ICONS.mic}
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 mt-3">
+          ${[
+            {pos:'بداية', obj:'سيارة', emoji:'🚗', target:'س'},
+            {pos:'وسط', obj:'حقيبة', emoji:'🎒', target:'س'},
+            {pos:'نهاية', obj:'شمس', emoji:'☀️', target:'س'},
+          ].map(o => `
+            <div class="bg-white rounded-lg p-3 text-center">
+              <p class="text-3xl">${o.emoji}</p>
+              <p class="text-sm font-semibold mt-1">${o.obj}</p>
+              <p class="text-[10px] text-slate-500">${o.pos} الكلمة: ${o.target}-...</p>
+            </div>
+          `).join('')}
+        </div>
+        ${State.recording ? `
+          <div class="mt-3 p-2 bg-rose-100 rounded-lg text-center text-sm text-rose-700 font-semibold flex items-center justify-center gap-2">
+            <span class="pulse-dot"></span> جاري التسجيل...
+          </div>
+        ` : ''}
+        ${State.assessmentResult ? `
+          <div class="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm">
+            <p class="font-bold text-emerald-700">📊 نتائج التحليل الصوتي:</p>
+            <ul class="text-emerald-800 list-disc pr-5 mt-1">
+              <li>سيارة → "تيارة" (إبدال س ← ت) ❌</li>
+              <li>حقيبة → "حقيبة" (صحيحة) ✅</li>
+              <li>شمس → "شمت" (إبدال س ← ت) ❌</li>
+            </ul>
+            <p class="mt-2 font-semibold">نسبة الدقة: 33% — تأكد الحاجة لتدخل علاجي</p>
+          </div>
+        ` : ''}
+        <div class="mt-3 flex justify-end">
+          <button onclick="State.caseStep=2; State.assessmentResult = 'تم'; render()" class="px-4 py-2 gradient-amber text-white rounded-lg font-semibold">تشغيل التحليل الصوتي</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-between pt-2">
+      <button onclick="State.caseStep=1;render()" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 flex items-center gap-2">${ICONS.back} السابق</button>
+      <button onclick="State.caseStep=3;render()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold flex items-center gap-2">التالي: الإحالات ${ICONS.next}</button>
+    </div>
+  </div>
+  `;
+}
+
+function toggleRecording() {
+  if(State.recording){
+    clearInterval(State.recordingTimer);
+    State.recording = false;
+    State.recordingSeconds = 0;
+  } else {
+    State.recording = true;
+    State.recordingSeconds = 0;
+    State.recordingTimer = setInterval(() => {
+      State.recordingSeconds++;
+      const el = document.getElementById('recSeconds');
+      if(el) el.textContent = `0:${String(State.recordingSeconds).padStart(2,'0')}`;
+      if(State.recordingSeconds >= 8) toggleRecording();
+    }, 1000);
+  }
+  render();
+}
+
+/* --- STEP 3 --- */
+function renderStep3Referrals() {
+  return `
+  <div class="space-y-4">
+    <h4 class="font-bold text-slate-800">🔗 إحالات تكميلية إلى أخصائيين</h4>
+    <p class="text-sm text-slate-600">اختر الإحالات اللازمة لتأكيد أو نفي التشخيصات المتداخلة</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      ${[
+        {n:'طبيب ORL', i:'👂', sub:'فحص السمع (Audiométrie)', desc:'لاستبعاد ضعف السمع كسبب للتأخر اللغوي', code:'ORL-2026-048', status:'pending'},
+        {n:'طبيب أعصاب', i:'🧠', sub:'تخطيط الدماغ / Brain Mapping', desc:'لاستبعاد اضطرابات عصبية (صرع، بؤر دماغية)', code:'NEURO-2026-048', status:'pending'},
+        {n:'أخصائي نفسي', i:'💭', sub:'اختبار ذكاء (WISC-V / WIPPSI)', desc:'لاستبعاد الإعاقة الذهنية', code:'PSY-2026-048', status:'pending'},
+      ].map(r => `
+        <div class="card p-4">
+          <div class="text-3xl mb-1">${r.i}</div>
+          <p class="font-bold text-slate-800">${r.n}</p>
+          <p class="text-xs text-slate-500 mb-2">${r.sub}</p>
+          <p class="text-sm text-slate-600 mb-3">${r.desc}</p>
+          <div class="text-xs flex items-center gap-1 mb-3">
+            <span class="badge bg-slate-100 text-slate-600">${r.code}</span>
+            <span class="badge bg-amber-100 text-amber-700">قيد الانتظار</span>
+          </div>
+          <button onclick="triggerReferral('${r.n}')" class="w-full text-sm py-2 gradient-teal text-white rounded-lg">إرسال الإحالة</button>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="flex justify-between pt-2">
+      <button onclick="State.caseStep=2;render()" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 flex items-center gap-2">${ICONS.back} السابق</button>
+      <button onclick="State.caseStep=4;render()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold flex items-center gap-2">التالي: التشخيص التفريقي ${ICONS.next}</button>
+    </div>
+  </div>
+  `;
+}
+
+function triggerReferral(target) {
+  showModal(`
+    <div class="p-5 text-center">
+      <div class="text-5xl mb-3">✅</div>
+      <h3 class="font-bold text-lg mb-2">تم إرسال الإحالة إلى ${target}</h3>
+      <p class="text-sm text-slate-600">سيتم إخطارك عند استلام التقرير. سيظهر تلقائيًا في فضاء الأخصائي الطبي.</p>
+      <button onclick="closeModal()" class="mt-4 px-4 py-2 gradient-teal text-white rounded-lg">حسنًا</button>
+    </div>
+  `);
+}
+
+/* --- STEP 4 --- */
+function renderStep4Differential() {
+  return `
+  <div class="space-y-4">
+    <h4 class="font-bold text-slate-800">⚖️ التشخيص التفريقي (Differential Diagnosis)</h4>
+    <p class="text-sm text-slate-600">تحليل النتائج لاستبعاد الأسباب المتداخلة</p>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      ${[
+        { h: 'ضعف السمع', e: 'Hearing Loss', icon: '👂', status: 'ruled', result: 'ORL: السمع طبيعي (Audiogram ≤ 20 dB)' },
+        { h: 'الإعاقة الذهنية', e: 'Intellectual Disability', icon: '🧠', status: 'ruled', result: 'WISC-V: معامل ذكاء 105 (طبيعي)' },
+        { h: 'التوحد', e: 'Autism (ASD)', icon: '🦋', status: 'ruled', result: 'M-CHAT: 1/8 — تواصل اجتماعي محفوظ' },
+        { h: 'تأخر لغوي نمائي', e: 'Specific Language Impairment', icon: '💬', status: 'confirmed', result: 'CELF-5: اللغة الاستقبالية طبيعية، التعبيرية أقل من المتوقع' },
+        { h: 'اضطراب النطق الصوتي', e: 'Phonological Disorder', icon: '🔤', status: 'confirmed', result: 'اختبار التسمية: إبدال س ← ت في 67% من الكلمات' },
+      ].map(d => `
+        <div class="card p-4 border-r-4 ${d.status==='ruled'?'border-emerald-500':'border-rose-500'}">
+          <div class="flex items-start gap-3">
+            <div class="text-3xl">${d.icon}</div>
+            <div class="flex-1">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="font-bold text-slate-800">${d.h}</p>
+                  <p class="text-xs text-slate-500">${d.e}</p>
+                </div>
+                <span class="badge ${d.status==='ruled'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${d.status==='ruled'?'✓ مُستبعد':'✗ مُؤكد'}</span>
+              </div>
+              <p class="text-sm text-slate-600 mt-2">${d.result}</p>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+      <p class="font-bold text-amber-800 mb-1">🧠 الخلاصة الإكلينيكية</p>
+      <p class="text-sm text-amber-900">
+        النتائج تستبعد ضعف السمع، الإعاقة الذهنية، والتوحد. 
+        تُؤكد <strong>اضطراب نطق صوتي (Phonological Disorder)</strong> مع إبدال صوت السين (س) بالتاء (ت) في الموضعين الأول والأخير.
+      </p>
+    </div>
+
+    <div class="flex justify-between pt-2">
+      <button onclick="State.caseStep=3;render()" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 flex items-center gap-2">${ICONS.back} السابق</button>
+      <button onclick="State.caseStep=5;render()" class="px-4 py-2 gradient-teal text-white rounded-lg font-semibold flex items-center gap-2">التالي: التقرير والخطة ${ICONS.next}</button>
+    </div>
+  </div>
+  `;
+}
+
+/* --- STEP 5 --- */
+function renderStep5Report() {
+  return `
+  <div class="space-y-4">
+    <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4">
+      <h4 class="font-bold text-emerald-800 mb-2">📄 التقرير السريري + خطة العلاج</h4>
+      <p class="text-sm text-slate-700 mb-3">تم توليد التقرير تلقائيًا بناءً على الخطوات السابقة</p>
+      <div class="bg-white rounded-lg p-3 text-sm space-y-1">
+        <p><strong>التشخيص:</strong> اضطراب نطق صوتي (Phonological Disorder) — إبدال س ← ت</p>
+        <p><strong>مستوى الشدة:</strong> متوسط</p>
+        <p><strong>ICD-11:</strong> 6A01.2 | DSM-5: 315.39</p>
+        <p><strong>التوصية:</strong> علاج نطق أسبوعي، 30 دقيقة، مدة 12 أسبوعًا</p>
+      </div>
+    </div>
+
+    <h4 class="font-bold text-slate-800">🎯 الخطة العلاجية الديناميكية</h4>
+    <div class="space-y-2">
+      ${[
+        {w:1-2, t:'التدريب على التمييز السمعي (أصوات س / ت)', icon:'👂'},
+        {w:3-4, t:'وضع الكلمة: تسمية صور بسيط (س + ح + ا)', icon:'📸'},
+        {w:5-6, t:'وضع الكلمة: تسمية صور (ا + ح + س)', icon:'📸'},
+        {w:7-8, t:'الجمل القصيرة وسياق المحادثة', icon:'💬'},
+        {w:9-12, t:'تعميم + استمرارية في البيت', icon:'🏠'},
+      ].map(p => `
+        <div class="card p-3 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-teal text-white grid place-items-center text-xl">${p.icon}</div>
+          <div class="flex-1">
+            <p class="font-semibold text-sm">الأسبوع ${p.w}</p>
+            <p class="text-sm text-slate-600">${p.t}</p>
+          </div>
+          <span class="badge bg-slate-100 text-slate-600">مجدول</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <button onclick="downloadReport()" class="px-4 py-2 gradient-emerald text-white rounded-lg font-semibold">📥 تحميل التقرير (PDF)</button>
+      <button onclick="openGamification()" class="px-4 py-2 gradient-amber text-white rounded-lg font-semibold">🎮 ابدأ العلاج التفاعلي (Gamification)</button>
+      <button onclick="openCaseMonitoring()" class="px-4 py-2 gradient-purple text-white rounded-lg font-semibold">📊 متابعة الحالة</button>
+    </div>
+  </div>
+  `;
+}
+
+function downloadReport() {
+  const text = `TawasoL.assist — Clinical Report\n\nCase: سامي بن كريم (4.5y)\nID: CASE-2026-048\n\nDiagnosis: Phonological Disorder (س → ت)\nICD-11: 6A01.2\nDSM-5: 315.39\n\nPlan: 12-week weekly speech therapy\n\nGenerated: ${new Date().toLocaleString('ar')}`;
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Clinical_Report_CASE-2026-048.txt';
+  a.click();
+}
+
+/* ---- CALENDAR ---- */
+function renderCalendar() {
+  return `
+  <div class="card p-5">
+    <h3 class="font-bold text-lg flex items-center gap-2 mb-3">📅 جدول المواعيد</h3>
+    <div class="space-y-2 text-sm">
+      ${[
+        {time:'09:00',name:'سامي بن كريم',type:'جلسة علاج',c:'emerald'},
+        {time:'10:30',name:'فاطمة الزهراء',type:'تقييم أولي',c:'amber'},
+        {time:'11:30',name:'عبد الرحمن',type:'متابعة',c:'teal'},
+        {time:'14:00',name:'اجتماع مع ORL',type:'إحالة',c:'purple'},
+        {time:'15:00',name:'ليلى بنت أحمد',type:'جلسة علاج',c:'emerald'},
+      ].map(a => `
+        <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-slate-50">
+          <span class="text-xs font-bold text-slate-500 w-12">${a.time}</span>
+          <span class="w-1.5 h-10 rounded-full bg-${a.c}-500"></span>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-sm truncate">${a.name}</p>
+            <p class="text-xs text-slate-500">${a.type}</p>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+  `;
+}
+
+/* ---- REFERRALS (sidebar) ---- */
+function renderReferrals() {
+  return `
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-bold text-lg flex items-center gap-2">🔗 الإحالات</h3>
+      <span class="chip bg-purple-50 text-purple-700">${State.notifications} نشطة</span>
+    </div>
+    <div class="space-y-2 text-sm">
+      ${[
+        {to:'ORL — د. بن علي', case:'سامي', status:'بانتظار التقرير', c:'amber'},
+        {to:'Neuro — د. زهرة', case:'آدم', status:'مستلم', c:'teal'},
+        {to:'Psy — د. كريم', case:'مريم', status:'مكتمل', c:'emerald'},
+      ].map(r => `
+        <div class="p-2.5 rounded-lg border border-slate-100 hover:bg-slate-50">
+          <div class="flex items-center justify-between">
+            <p class="font-semibold">${r.to}</p>
+            <span class="badge bg-${r.c}-100 text-${r.c}-700">${r.status}</span>
+          </div>
+          <p class="text-xs text-slate-500">حالة: ${r.case}</p>
+        </div>
+      `).join('')}
+    </div>
+  </div>
+  `;
+}
+
+/* ---- CASE MONITORING ---- */
+function renderCaseMonitoring() {
+  return `
+  <div class="card p-5">
+    <h3 class="font-bold text-lg flex items-center gap-2 mb-3">📈 متابعة الحالات</h3>
+    <div class="space-y-3">
+      <div class="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-3">
+        <div class="flex items-center justify-between mb-1">
+          <p class="font-bold text-sm">سامي — 4.5 سنوات</p>
+          <span class="chip bg-emerald-500 text-white">متعافٍ ✓</span>
+        </div>
+        <p class="text-xs text-slate-600 mb-2">إبدال س ← ت</p>
+        <div class="flex items-center gap-2 text-xs">
+          <div class="flex-1 bg-emerald-200 rounded-full h-2"><div class="bg-emerald-500 h-2 rounded-full bar-fill" style="width:96%"></div></div>
+          <span class="font-bold text-emerald-700">96%</span>
+        </div>
+        <p class="text-xs text-slate-500 mt-1">5 جلسات — تعافٍ ملحوظ</p>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-3">
+        <div class="flex items-center justify-between mb-1">
+          <p class="font-bold text-sm">مريم — 6 سنوات</p>
+          <span class="chip bg-amber-100 text-amber-700">قيد العلاج</span>
+        </div>
+        <p class="text-xs text-slate-600 mb-2">تأتأة</p>
+        <div class="flex items-center gap-2 text-xs">
+          <div class="flex-1 bg-amber-200 rounded-full h-2"><div class="bg-amber-500 h-2 rounded-full bar-fill" style="width:62%"></div></div>
+          <span class="font-bold text-amber-700">62%</span>
+        </div>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-3">
+        <div class="flex items-center justify-between mb-1">
+          <p class="font-bold text-sm">آدم — 8 سنوات</p>
+          <span class="chip bg-rose-100 text-rose-700">يحتاج انتباه</span>
+        </div>
+        <p class="text-xs text-slate-600 mb-2">عسر قراءة</p>
+        <div class="flex items-center gap-2 text-xs">
+          <div class="flex-1 bg-rose-200 rounded-full h-2"><div class="bg-rose-500 h-2 rounded-full bar-fill" style="width:34%"></div></div>
+          <span class="font-bold text-rose-700">34%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+/* ===========================================================
+   GAMIFICATION MODAL
+   =========================================================== */
+function openGamification() {
+  showModal(`
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <h3 class="text-xl font-bold">🎮 العلاج التفاعلي (Home Gamification)</h3>
+          <p class="text-sm text-slate-500">سامي — تدريب على نطق حرف "س"</p>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 grid place-items-center">✕</button>
+      </div>
+
+      <div class="text-center bg-gradient-to-br from-amber-50 to-rose-50 rounded-2xl p-6 mb-4">
+        <div id="animalEmoji" class="animal-emoji">🐰</div>
+        <p id="animalLabel" class="font-bold text-slate-700 mt-2">اضغط على صورة لتبدأ!</p>
+      </div>
+
+      <p class="text-sm font-semibold text-slate-700 mb-2">اختر الصورة التي تحتوي على حرف "س":</p>
+      <div class="grid grid-cols-3 gap-2">
+        ${[
+          {obj:'سيارة', emoji:'🚗', correct:true},
+          {obj:'تفاحة', emoji:'🍎', correct:false},
+          {obj:'شمس', emoji:'☀️', correct:true},
+          {obj:'قطة', emoji:'🐱', correct:false},
+          {obj:'سمكة', emoji:'🐟', correct:true},
+          {obj:'بيت', emoji:'🏠', correct:false},
+        ].map(o => `
+          <button data-game-obj class="object-card p-3 rounded-xl border-2 border-slate-200 text-center">
+            <p class="text-4xl">${o.emoji}</p>
+            <p class="text-sm font-semibold mt-1">${o.obj}</p>
+          </button>
+        `).join('')}
+      </div>
+
+      <div class="mt-4 p-3 bg-teal-50 rounded-lg text-sm text-teal-800">
+        <strong>💡 ملاحظة للوالدين:</strong> شجّع طفلك على نطق حرف "س" بإخراج الهواء من بين الأسنان. 
+        إذا أخطأ (قال "ت" بدل "س")، صحّح بلطف دون توبيخ.
+      </div>
+    </div>
+  `);
+}
+
+function openCaseMonitoring() {
+  showModal(`
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold">📈 منحنى تطور الحالة</h3>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 grid place-items-center">✕</button>
+      </div>
+      <div class="bg-white rounded-xl p-3">
+        <canvas id="progressChart" height="200"></canvas>
+      </div>
+      <div class="mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-lg text-sm">
+        <strong>📊 النتيجة:</strong> بعد 3 جلسات، تعافى سامي تمامًا من اضطراب الإبدال الصوتي.
+        دقة النطق انتقلت من 28% إلى 96%. 🎉
+      </div>
+    </div>
+  `);
+  setTimeout(() => {
+    const ctx = document.getElementById('progressChart');
+    if(!ctx) return;
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: State.progressData.map(d => d.date),
+        datasets: [{
+          label: 'دقة النطق %',
+          data: State.progressData.map(d => d.accuracy),
+          borderColor: '#0ea5a4',
+          backgroundColor: 'rgba(14,165,164,0.15)',
+          tension: 0.4,
+          fill: true,
+          pointRadius: 6,
+          pointBackgroundColor: '#0ea5a4'
+        }]
+      },
+      options: {
+        plugins: { legend: {display: true} },
+        scales: { y: { beginAtZero: true, max: 100 } }
+      }
+    });
+  }, 100);
+}
+
+/* ===========================================================
+   PARENT DASHBOARD
+   =========================================================== */
+function renderParent() {
+  return `
+  <section class="mb-5">
+    <div class="card p-5 gradient-purple text-white">
+      <h2 class="text-2xl font-extrabold">مرحبًا، ولي الأمر</h2>
+      <p class="text-sm opacity-90">فضاء متابعة حالة طفلك (رضيع/طفل) أو الراشد المرافق</p>
+    </div>
+  </section>
+
+  <!-- Tabs -->
+  <div class="card p-2 mb-4 flex gap-1">
+    <button id="tabChild" onclick="State.parentTab='child';render()" class="flex-1 py-2 rounded-lg font-semibold ${State.parentTab==='child'?'tab-active':''}">🧒 حالة الطفل</button>
+    <button id="tabAdult" onclick="State.parentTab='adult';render()" class="flex-1 py-2 rounded-lg font-semibold ${State.parentTab==='adult'?'tab-active':''}">👨‍🦳 حالة الراشد</button>
+  </div>
+
+  ${State.parentTab === 'child' || !State.parentTab ? renderParentChild() : renderParentAdult()}
+  `;
+}
+
+State.parentTab = 'child';
+
+function renderParentChild() {
+  return `
+  <div class="space-y-5">
+
+    <!-- Growth tracker -->
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">📊 متابع النمو (حتى 3 سنوات — CDC)</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        ${[
+          {n:'النمو الجسدي والحركي', i:'🏃', items:['الجلوس 6 أشهر','الزحف 9 أشهر','المشي 12 شهرًا','الجري 18 شهرًا'], score:90},
+          {n:'اللغة والتواصل', i:'🗣️', items:['المناغاة 6 أشهر','أول كلمة 12 شهرًا','جمل 24 شهرًا','محادثة 36 شهرًا'], score:62},
+          {n:'النمو المعرفي', i:'🧠', items:['التعرف على الوجوه','حل المشكلات البسيطة','الذاكرة قصيرة المدى','التصنيف'], score:75},
+        ].map(d => `
+          <div class="rounded-xl p-3 border border-slate-200">
+            <div class="flex items-center justify-between mb-2">
+              <div class="flex items-center gap-2"><span class="text-xl">${d.i}</span><p class="font-semibold text-sm">${d.n}</p></div>
+              <span class="font-bold text-${d.score>=80?'emerald':d.score>=60?'amber':'rose'}-600">${d.score}%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 mb-2"><div class="bg-${d.score>=80?'emerald':d.score>=60?'amber':'rose'}-500 h-2 rounded-full bar-fill" style="width:${d.score}%"></div></div>
+            <ul class="text-xs space-y-1 text-slate-600">
+              ${d.items.map(it => `<li class="flex items-center gap-1"><span class="text-emerald-500">✓</span> ${it}</li>`).join('')}
+            </ul>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Home gamification + progress -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+      <div class="card p-5">
+        <h3 class="font-bold text-lg mb-3 flex items-center gap-2">🎮 تمارين منزلية تفاعلية</h3>
+        <div class="text-center bg-gradient-to-br from-amber-50 to-rose-50 rounded-2xl p-5 mb-3">
+          <div id="animalEmoji" class="animal-emoji">🐰</div>
+          <p id="animalLabel" class="font-bold text-slate-700 mt-2">تمرين نطق حرف "س"</p>
+        </div>
+        <p class="text-sm text-slate-600 mb-2">شجّع طفلك على النطق الصحيح. اضغط الصورة الصحيحة:</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button data-game-obj class="object-card p-3 rounded-xl border-2 border-slate-200 text-center"><p class="text-3xl">🚗</p><p class="text-xs font-semibold mt-1">سيارة</p></button>
+          <button data-game-obj class="object-card p-3 rounded-xl border-2 border-slate-200 text-center"><p class="text-3xl">🍎</p><p class="text-xs font-semibold mt-1">تفاحة</p></button>
+          <button data-game-obj class="object-card p-3 rounded-xl border-2 border-slate-200 text-center"><p class="text-3xl">☀️</p><p class="text-xs font-semibold mt-1">شمس</p></button>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <h3 class="font-bold text-lg mb-3 flex items-center gap-2">📈 منحنى التطور المشترك مع الأخصائي</h3>
+        <canvas id="parentChart" height="200"></canvas>
+        <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+          <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-2">
+            <p class="text-xs text-slate-500">آخر تحديث</p>
+            <p class="font-bold text-emerald-700">↑ تحسّن ملحوظ</p>
+          </div>
+          <div class="bg-rose-50 border border-rose-200 rounded-lg p-2">
+            <p class="text-xs text-slate-500">المنطقة المثيرة للقلق</p>
+            <p class="font-bold text-rose-700">لا يوجد</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- M-CHAT -->
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-bold text-lg flex items-center gap-2">🔬 اختبار M-CHAT — فحص التوحد</h3>
+        <div class="flex items-center gap-3 text-sm">
+          <span class="badge bg-slate-100 text-slate-700">النتيجة: <span id="mchatScore" class="font-bold text-rose-600">0</span>/8</span>
+          <span class="badge bg-teal-50 text-teal-700">التقدم: <span id="mchatProgress">0/8</span></span>
+        </div>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-2 mb-4">
+        <div id="mchatProgressBar" class="bg-teal-500 h-2 rounded-full bar-fill" style="width:0%"></div>
+      </div>
+      <div class="space-y-2">
+        ${MCHAT_QUESTIONS.map((q,i) => `
+          <div class="p-3 bg-slate-50 rounded-xl">
+            <p class="text-sm font-semibold mb-2">${i+1}. ${q.q}</p>
+            <div class="flex gap-2">
+              <button data-mchat="${i}" data-ans="yes" class="px-4 py-1.5 text-sm rounded-lg bg-white border border-slate-200 hover:bg-rose-50 hover:border-rose-300">نعم</button>
+              <button data-mchat="${i}" data-ans="no" class="px-4 py-1.5 text-sm rounded-lg bg-white border border-slate-200 hover:bg-emerald-50 hover:border-emerald-300">لا</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function renderParentAdult() {
+  return `
+  <div class="space-y-5">
+
+    <!-- Linguistic & cognitive -->
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">🧠 التتبع اللغوي والمعرفي (لراشد)</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        ${[
+          {n:'التسمية (Naming)', i:'🏷️', score:65, last:'14/20 صحيح'},
+          {n:'المحادثة التلقائية', i:'💬', score:72, last:'استمرارية جيدة'},
+          {n:'صعوبة استدعاء الأسماء (Anomia)', i:'🔍', score:48, last:'حالات تردد متعددة'},
+          {n:'تنفيذ الأوامر (بسيطة / معقدة)', i:'👆', score:80, last:'بسيطة 90% / معقدة 65%'},
+        ].map(t => `
+          <div class="p-3 rounded-xl border border-slate-200">
+            <div class="flex items-center justify-between mb-1">
+              <p class="font-semibold text-sm">${t.i} ${t.n}</p>
+              <span class="font-bold text-${t.score>=70?'emerald':t.score>=50?'amber':'rose'}-600">${t.score}%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2 mb-2">
+              <div class="bg-${t.score>=70?'emerald':t.score>=50?'amber':'rose'}-500 h-2 rounded-full bar-fill" style="width:${t.score}%"></div>
+            </div>
+            <p class="text-xs text-slate-500">آخر تقييم: ${t.last}</p>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- Neuroimaging & Biomarker log -->
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">🧬 سجل التصوير العصبي والعلامات الحيوية</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <p class="text-sm font-semibold mb-2">📁 التقارير الشعاعية (Scanner / IRM / EEG)</p>
+          <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center text-sm text-slate-500 cursor-pointer hover:bg-slate-50">
+            <p class="text-2xl mb-1">📤</p>
+            <p>اسحب الملفات هنا أو انقر للرفع</p>
+            <p class="text-xs text-slate-400 mt-1">PDF, JPG, DICOM</p>
+          </div>
+          <div class="mt-2 space-y-1 text-sm">
+            ${[
+              {n:'IRM الدماغ - 2026-04-15', s:'طبيعي'},
+              {n:'EEG - 2026-03-22', s:'لا نشاط صرعي'},
+            ].map(r => `
+              <div class="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                <span>${r.n}</span>
+                <span class="badge bg-emerald-100 text-emerald-700">${r.s}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div>
+          <p class="text-sm font-semibold mb-2">🎙️ العلامات الحيوية الصوتية (Digital Biomarkers)</p>
+          <div class="bg-gradient-to-br from-rose-50 to-amber-50 rounded-xl p-3">
+            <div class="flex items-center justify-between mb-2">
+              <div>
+                <p class="font-semibold text-sm">تسجيل الكلام التلقائي</p>
+                <p class="text-xs text-slate-500">تحليل: سرعة الكلام، زمن استدعاء الكلمات</p>
+              </div>
+              <button class="w-10 h-10 gradient-rose text-white rounded-full grid place-items-center">${ICONS.mic}</button>
+            </div>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+              <div class="bg-white rounded-lg p-2"><p class="font-bold text-rose-600">-23%</p><p class="text-slate-500">سرعة الكلام</p></div>
+              <div class="bg-white rounded-lg p-2"><p class="font-bold text-amber-600">+1.8s</p><p class="text-slate-500">زمن التردد</p></div>
+              <div class="bg-white rounded-lg p-2"><p class="font-bold text-emerald-600">14%</p><p class="text-slate-500">توقفات</p></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guided exercises -->
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">🧘 تمارين يومية موجهة</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        ${[
+          {n:'تسمية الصور', i:'🏷️', dur:'5 دقائق', t:'صور يومية + تسجيل'},
+          {n:'مهام الفهم', i:'👂', dur:'7 دقائق', t:'استمع وأشر للصورة'},
+          {n:'حوار قصير', i:'💬', dur:'5 دقائق', t:'محادثة مع المرافق'},
+        ].map(e => `
+          <div class="card p-3 border-2 border-slate-100">
+            <div class="text-3xl mb-1">${e.i}</div>
+            <p class="font-bold text-sm">${e.n}</p>
+            <p class="text-xs text-slate-500">${e.t}</p>
+            <div class="flex items-center justify-between mt-2">
+              <span class="badge bg-slate-100 text-slate-600">⏱ ${e.dur}</span>
+              <button class="text-xs gradient-teal text-white px-2 py-1 rounded-lg">بدء</button>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <!-- AAC -->
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">🗣️ بوابة AAC — التواصل البديل والمعزز</h3>
+      <p class="text-sm text-slate-500 mb-3">اضغط الرموز للتعبير عن احتياجاتك الأساسية</p>
+      <div class="grid grid-cols-3 md:grid-cols-4 gap-2">
+        ${AAC_SYMBOLS.map(s => `
+          <button data-aac="${s.label}" class="aac-btn p-4 rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 hover:border-indigo-400 text-center">
+            <p class="text-4xl">${s.emoji}</p>
+            <p class="font-bold text-sm mt-1 text-indigo-900">${s.label}</p>
+          </button>
+        `).join('')}
+      </div>
+      <div id="aacBubble" class="mt-3 p-3 bg-indigo-100 border-2 border-indigo-300 rounded-xl text-center font-bold text-indigo-800 opacity-0 transition">نعم، أريد ذلك</div>
+    </div>
+
+  </div>
+  `;
+}
+
+function attachParent() {
+  if(State.parentTab === 'child' || !State.parentTab) {
+    // M-CHAT
+    document.querySelectorAll('[data-mchat]').forEach(c => c.addEventListener('click', e => {
+      const idx = parseInt(e.currentTarget.dataset.mchat);
+      const risk = MCHAT_QUESTIONS[idx].risk;
+      const positive = MCHAT_QUESTIONS[idx].positive;
+      if(risk){
+        State.mchatScore += e.currentTarget.dataset.ans === 'yes' ? 1 : 0;
+      }
+      if(positive){
+        State.mchatScore += e.currentTarget.dataset.ans === 'no' ? 1 : 0;
+      }
+      State.mchatAnswered++;
+      e.currentTarget.parentElement.querySelectorAll('button').forEach(b => b.disabled = true);
+      e.currentTarget.classList.add('opacity-50');
+      document.getElementById('mchatScore').textContent = State.mchatScore;
+      document.getElementById('mchatProgress').textContent = `${State.mchatAnswered}/${MCHAT_QUESTIONS.length}`;
+      document.getElementById('mchatProgressBar').style.width = `${(State.mchatAnswered/MCHAT_QUESTIONS.length)*100}%`;
+      if(State.mchatAnswered === MCHAT_QUESTIONS.length){
+        showMchatResult();
+      }
+    }));
+
+    // Game objects
+    document.querySelectorAll('[data-game-obj]').forEach(b => b.addEventListener('click', e => {
+      e.currentTarget.classList.add('object-card');
+      const correct = Math.random() > 0.3;
+      e.currentTarget.classList.add(correct ? 'correct' : 'wrong');
+      const animal = document.getElementById('animalEmoji');
+      const lbl = document.getElementById('animalLabel');
+      if(correct){
+        animal.textContent = '🐰';
+        animal.className = 'animal-emoji animal-happy';
+        lbl.textContent = '🎉 أحسنت! أرنب يحتفل!';
+        lbl.className = 'font-bold text-emerald-600';
+      } else {
+        animal.textContent = '😢';
+        animal.className = 'animal-emoji animal-sad';
+        lbl.textContent = 'حاول مرة أخرى!';
+        lbl.className = 'font-bold text-rose-600';
+      }
+      setTimeout(() => { animal.className = 'animal-emoji'; }, 2000);
+    }));
+
+    // Chart
+    setTimeout(() => {
+      const ctx = document.getElementById('parentChart');
+      if(!ctx) return;
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: State.progressData.map(d => d.date),
+          datasets: [{
+            label: 'دقة النطق %',
+            data: State.progressData.map(d => d.accuracy),
+            borderColor: '#6366f1',
+            backgroundColor: 'rgba(99,102,241,0.15)',
+            tension: 0.4,
+            fill: true,
+            pointRadius: 5,
+            pointBackgroundColor: '#6366f1'
+          }]
+        },
+        options: {
+          plugins: { legend: {display: true} },
+          scales: { y: { beginAtZero: true, max: 100 } }
+        }
+      });
+    }, 50);
+  } else {
+    // AAC
+    document.querySelectorAll('[data-aac]').forEach(b => b.addEventListener('click', e => {
+      const sym = AAC_SYMBOLS.find(s => s.label === e.currentTarget.dataset.aac);
+      const speech = window.speechSynthesis;
+      const u = new SpeechSynthesisUtterance(sym.voice);
+      u.lang = 'ar-SA';
+      speech.speak(u);
+      const bubble = document.getElementById('aacBubble');
+      bubble.textContent = sym.voice;
+      bubble.classList.remove('opacity-0');
+      bubble.classList.add('opacity-100');
+      setTimeout(() => bubble.classList.replace('opacity-100','opacity-0'), 2500);
+    }));
+  }
+}
+
+/* ===========================================================
+   STUDENT SPACE
+   =========================================================== */
+function renderStudent() {
+  if(!State.studentLogged) {
+    return `
+    <section class="max-w-md mx-auto">
+      <div class="card p-6">
+        <div class="text-center mb-5">
+          <div class="w-16 h-16 rounded-2xl gradient-purple mx-auto grid place-items-center text-3xl text-white mb-3">🎓</div>
+          <h2 class="text-2xl font-bold">فضاء الطالب</h2>
+          <p class="text-sm text-slate-500">يتطلب بطاقة تعريف الطالب</p>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-700">رمز بطاقة الطالب (Student ID)</label>
+          <input id="studentId" type="text" placeholder="STD-2026-XXXX" class="w-full mt-2 px-3 py-2.5 rounded-lg border border-slate-200 focus:border-teal-500 outline-none"/>
+          <p class="text-xs text-slate-500 mt-1">جرّب: <code class="bg-slate-100 px-1.5 py-0.5 rounded">STD-2026-DEMO</code></p>
+        </div>
+        <div>
+          <label class="text-sm font-semibold text-slate-700">رمز الدخول (Access Code)</label>
+          <input id="studentCode" type="password" placeholder="••••" class="w-full mt-2 px-3 py-2.5 rounded-lg border border-slate-200 focus:border-teal-500 outline-none"/>
+          <p class="text-xs text-slate-500 mt-1">جرّب: <code class="bg-slate-100 px-1.5 py-0.5 rounded">1234</code></p>
+        </div>
+        <button onclick="loginStudent()" class="w-full mt-4 py-3 gradient-teal text-white rounded-xl font-bold">دخول</button>
+        <div class="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
+          ⚠️ الوصول مقيد بالاتفاقية الأكاديمية. البيانات متاحة بشكل مجهول الهوية.
+        </div>
+      </div>
+    </section>
+    `;
+  }
+
+  return `
+  <section class="mb-5">
+    <div class="card p-5 gradient-purple text-white flex items-center justify-between">
+      <div>
+        <h2 class="text-2xl font-extrabold">🎓 فضاء الطالب</h2>
+        <p class="text-sm opacity-90">طالب: أحمد بن يوسف · ID: STD-2026-DEMO</p>
+      </div>
+      <button onclick="State.studentLogged=false;render()" class="px-3 py-1.5 bg-white/20 rounded-lg text-sm">خروج</button>
+    </div>
+  </section>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">📚 بنك الحالات مجهولة الهوية</h3>
+      <div class="space-y-2">
+        ${[
+          {n:'حالة 001: طفل 4 سنوات - إبدال صوتي', t:'اضطراب نطق', lvl:'مبتدئ'},
+          {n:'حالة 002: بالغ 65 سنة - حبسة بروكا', t:'حبسة', lvl:'متوسط'},
+          {n:'حالة 003: طفل 6 سنوات - تأتأة', t:'اضطراب طلاقة', lvl:'متوسط'},
+          {n:'حالة 004: راشد 70 سنة - زهايمر', t:'اضطراب عصبي معرفي', lvl:'متقدم'},
+        ].map((c,i) => `
+          <button onclick="openAnonymizedCase(${i})" class="w-full text-right p-3 rounded-xl border border-slate-200 hover:border-teal-300 hover:bg-teal-50/40 flex items-center justify-between">
+            <div>
+              <p class="font-semibold text-sm">${c.n}</p>
+              <p class="text-xs text-slate-500">${c.t} · ${c.lvl}</p>
+            </div>
+            <span class="text-slate-400">${ICONS.next}</span>
+          </button>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="card p-5">
+      <h3 class="font-bold text-lg mb-3 flex items-center gap-2">📥 أوراق تقنية واختبارات قابلة للتنزيل</h3>
+      <div class="space-y-2">
+        ${[
+          {n:'بطاقة التقييم الأولي (PDF)', s:'180 KB'},
+          {n:'نموذج Anamnèse (Word)', s:'45 KB'},
+          {n:'دليل CELF-5 (PDF)', s:'2.3 MB'},
+          {n:'ورقة تسجيل Phonetic Transcription', s:'120 KB'},
+        ].map(d => `
+          <div class="flex items-center justify-between p-3 rounded-xl border border-slate-200">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">📄</span>
+              <div>
+                <p class="font-semibold text-sm">${d.n}</p>
+                <p class="text-xs text-slate-500">${d.s}</p>
+              </div>
+            </div>
+            <button class="text-sm gradient-teal text-white px-3 py-1.5 rounded-lg">تنزيل</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+  </div>
+  `;
+}
+
+function loginStudent() {
+  const id = document.getElementById('studentId')?.value;
+  const code = document.getElementById('studentCode')?.value;
+  if(id && code){
+    State.studentLogged = true;
+    render();
+  } else {
+    alert('الرجاء إدخال الرمز وكلمة المرور');
+  }
+}
+
+function openAnonymizedCase(i) {
+  const cases = [
+    {h:'حالة 001 — إبدال صوتي', detail:'ذكر 4 سنوات. إبدال س ← ت. CELF-5 في النطاق الطبيعي غير اللفظي. خطة: 12 أسبوع.'},
+    {h:'حالة 002 — حبسة بروكا', detail:'أنثى 65 سنة، بعد جلطة. CELF: 40%. الفهم 80%. خطة: علاج 6 أشهر.'},
+    {h:'حالة 003 — تأتأة', detail:'ذكر 6 سنوات. التأتأة المتطورة. SSI-4: درجة متوسطة. خطة: تعديل + أسرة.'},
+    {h:'حالة 004 — زهايمر', detail:'ذكر 70 سنة. MMSE: 18/30. أنوميا متكررة. خطة: دعم معرفي أسبوعي.'},
+  ];
+  const c = cases[i];
+  showModal(`
+    <div class="p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-xl font-bold">${c.h}</h3>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg hover:bg-slate-100 grid place-items-center">✕</button>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4 text-sm text-slate-700">${c.detail}</div>
+      <p class="text-xs text-slate-500 mt-3">🔒 جميع البيانات مجهولة الهوية، مطابقة لاتفاقية IRB.</p>
+    </div>
+  `);
+}
+
+function attachStudent() {
+  // No interactive handlers beyond login
+}
+
+/* ===========================================================
+   MEDICAL SPECIALIST SPACE
+   =========================================================== */
+function renderSpecialist() {
+  return `
+  <section class="mb-5">
+    <div class="card p-5 gradient-rose text-white">
+      <h2 class="text-2xl font-extrabold">🧠 فضاء الأخصائي الطبي</h2>
+      <p class="text-sm opacity-90">استقبال الحالات المُحالة ومتابعة التقدم العلاجي</p>
+    </div>
+  </section>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div class="lg:col-span-2 space-y-5">
+
+      <div class="card p-5">
+        <h3 class="font-bold text-lg mb-3 flex items-center gap-2">📥 الحالات المُحالة إليك</h3>
+        <div class="space-y-2">
+          ${[
+            {from:'د. تومي كريمة (SLP)', p:'سامي بن كريم — 4.5 سنوات', task:'فحص السمع', urg:false, code:'ORL-2026-048'},
+            {from:'د. تومي كريمة (SLP)', p:'آدم — 8 سنوات', task:'تخطيط الدماغ (EEG)', urg:true, code:'NEURO-2026-049'},
+            {from:'د. منى (SLP)', p:'فاطمة — 5 سنوات', task:'اختبار ذكاء (WISC-V)', urg:false, code:'PSY-2026-050'},
+          ].map(r => `
+            <div class="p-3 rounded-xl border ${r.urg?'border-rose-300 bg-rose-50':'border-slate-200'}">
+              <div class="flex items-center justify-between mb-1">
+                <p class="font-semibold text-sm">${r.p}</p>
+                ${r.urg?'<span class="badge bg-rose-500 text-white">⚠️ عاجل</span>':''}
+              </div>
+              <p class="text-xs text-slate-600">من: ${r.from} · الفحص: ${r.task}</p>
+              <p class="text-xs text-slate-500 mt-1">${r.code}</p>
+              <div class="mt-2 flex gap-2">
+                <button onclick="activateTestShare('${r.p}')" class="text-xs px-3 py-1.5 gradient-teal text-white rounded-lg">تفعيل مشاركة الاختبار</button>
+                <button class="text-xs px-3 py-1.5 bg-white border border-slate-200 rounded-lg">إرسال تقرير</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <h3 class="font-bold text-lg mb-3 flex items-center gap-2">🤝 الإشراف المشترك على المرضى</h3>
+        <p class="text-sm text-slate-500 mb-3">تابع تقدم الحالات التي تشرف عليها مع الأخصائي الأرطفوني</p>
+        <div class="space-y-2">
+          ${[
+            {p:'سامي بن كريم', slp:'د. تومي كريمة', prog:96, sessions:5, status:'تعافٍ'},
+            {p:'مريم', slp:'د. منى', prog:62, sessions:8, status:'قيد العلاج'},
+          ].map(c => `
+            <div class="p-3 rounded-xl border border-slate-200">
+              <div class="flex items-center justify-between mb-1">
+                <p class="font-semibold">${c.p}</p>
+                <span class="badge bg-${c.prog>=80?'emerald':c.prog>=50?'amber':'rose'}-100 text-${c.prog>=80?'emerald':c.prog>=50?'amber':'rose'}-700">${c.status}</span>
+              </div>
+              <p class="text-xs text-slate-500">مع ${c.slp} · ${c.sessions} جلسات</p>
+              <div class="w-full bg-slate-100 rounded-full h-2 mt-2">
+                <div class="bg-teal-500 h-2 rounded-full bar-fill" style="width:${c.prog}%"></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="space-y-5">
+      <div class="card p-5">
+        <h3 class="font-bold text-lg mb-3 flex items-center gap-2">📊 إحصائياتي</h3>
+        <div class="space-y-2">
+          <div class="p-3 bg-teal-50 rounded-xl">
+            <p class="text-xs text-slate-500">إجمالي الحالات</p>
+            <p class="text-2xl font-bold text-teal-700">24</p>
+          </div>
+          <div class="p-3 bg-amber-50 rounded-xl">
+            <p class="text-xs text-slate-500">قيد الانتظار</p>
+            <p class="text-2xl font-bold text-amber-700">3</p>
+          </div>
+          <div class="p-3 bg-emerald-50 rounded-xl">
+            <p class="text-xs text-slate-500">تقارير مكتملة هذا الشهر</p>
+            <p class="text-2xl font-bold text-emerald-700">12</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-5">
+        <h3 class="font-bold text-lg mb-3 flex items-center gap-2">⚡ إجراءات سريعة</h3>
+        <button class="w-full mb-2 px-3 py-2 gradient-teal text-white rounded-lg text-sm">📤 تحميل تقرير جاهز</button>
+        <button class="w-full mb-2 px-3 py-2 bg-slate-100 rounded-lg text-sm">📝 إنشاء تقرير جديد</button>
+        <button class="w-full px-3 py-2 bg-slate-100 rounded-lg text-sm">📞 تواصل مع الأخصائي</button>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+function activateTestShare(patient) {
+  showModal(`
+    <div class="p-5 text-center">
+      <div class="text-5xl mb-3">🔗</div>
+      <h3 class="font-bold text-lg mb-2">تم تفعيل مشاركة الاختبار</h3>
+      <p class="text-sm text-slate-600">تم إخطار الأخصائي الأرطفوني. يمكنكما الآن رؤية نتائج اختبار ${patient} بشكل مشترك.</p>
+      <button onclick="closeModal()" class="mt-4 px-4 py-2 gradient-teal text-white rounded-lg">حسنًا</button>
+    </div>
+  `);
+}
+
+function attachSpecialist() {}
+
+/* ===========================================================
+   MODAL
+   =========================================================== */
+function showModal(html) {
+  const modal = document.getElementById('modal');
+  document.getElementById('modalContent').innerHTML = html;
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+  document.getElementById('modalBackdrop').onclick = closeModal;
+}
+function closeModal() {
+  const modal = document.getElementById('modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+
+/* INIT */
+render();
+</script>
+<style>
+#minimax-floating-ball {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 12px;
+  background: #222222;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  color: #F8F8F8;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  z-index: 9999;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+#minimax-floating-ball:hover {
+  transform: translateY(-2px);
+  background: #383838;
+}
+.minimax-ball-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.minimax-logo-wave {
+  width: 20px;
+  height: 20px;
+  background-image: url("data:image/svg+xml,%3Csvg%20preserveAspectRatio%3D%27none%27%20width%3D%27100%25%27%20height%3D%27100%25%27%20overflow%3D%27visible%27%20style%3D%27display%3A%20block%3B%27%20viewBox%3D%270%200%20170.136%20138.225%27%20fill%3D%27none%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Cg%20id%3D%27Frame%202116748449%27%3E%3Cpath%20id%3D%27Subtract%27%20d%3D%27M170%20101.783C170%20105.144%20168.49%20108.327%20165.886%20110.453L134.963%20135.702C132.964%20137.334%20130.463%20138.225%20127.883%20138.225H10.4938C4.69824%20138.225%200%20133.527%200%20127.732V39.2289C0%2035.8597%201.51758%2032.6698%204.13162%2030.5442L38.5402%202.56547C40.536%200.942662%2043.0298%200.0567377%2045.602%200.0567377H159.506C165.302%200.0567377%20170%204.75498%20170%2010.5506V101.783Z%27%20fill%3D%27black%27%20style%3D%27fill%3Ablack%3Bfill-opacity%3A1%3B%27/%3E%3Cpath%20id%3D%27Subtract_2%27%20d%3D%27M149.011%2094.4632C149.011%2096.1471%20148.253%2097.7415%20146.946%2098.8043L125.893%20115.936C124.895%20116.748%20123.648%20117.191%20122.361%20117.191H24.6479C22.716%20117.191%2021.15%20115.625%2021.15%20113.693V46.1166C21.15%2044.4267%2021.9135%2042.8274%2023.2274%2041.7648L47.367%2022.2437C48.3638%2021.4376%2049.607%2020.9982%2050.8888%2020.9988L145.514%2021.0427C147.446%2021.0436%20149.011%2022.6094%20149.011%2024.5406V94.4632Z%27%20fill%3D%27white%27%20style%3D%27fill%3Awhite%3Bfill-opacity%3A1%3B%27/%3E%3Cpath%20id%3D%27Rectangle%20111142564%27%20d%3D%27M42.111%2080.8025C42.111%2077.7115%2044.6167%2075.2057%2047.7077%2075.2057H60.9999C64.0908%2075.2057%2066.5966%2077.7115%2066.5966%2080.8025V121.029H42.111V80.8025Z%27%20fill%3D%27black%27%20style%3D%27fill%3Ablack%3Bfill-opacity%3A1%3B%27/%3E%3Cpath%20id%3D%27Rectangle%20111142567%27%20d%3D%27M79.1894%2080.8025C79.1894%2077.7115%2081.6952%2075.2057%2084.7861%2075.2057H98.0783C101.169%2075.2057%20103.675%2077.7115%20103.675%2080.8025V121.029H79.1894V80.8025Z%27%20fill%3D%27black%27%20style%3D%27fill%3Ablack%3Bfill-opacity%3A1%3B%27/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 11px;
+  background-color: #8FD1FF;
+  border-radius: 4px;
+}
+
+.minimax-ball-text {
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.minimax-close-icon {
+  margin-left: 8px;
+  font-size: 16px;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.minimax-close-icon:hover {
+  opacity: 1;
+}
+</style>
+<div id="minimax-floating-ball">
+  <div class="minimax-ball-content">
+    <div class="minimax-logo-wave"></div>
+    <span class="minimax-ball-text">Created by MiniMax Agent</span>
+  </div>
+  <div class="minimax-close-icon">×</div>
+</div>
+<script>
+// Initialize floating ball functionality
+function initFloatingBall() {
+  const ball = document.getElementById('minimax-floating-ball');
+  if (!ball) return;
+
+  // Initial animation
+  ball.style.opacity = '0';
+  ball.style.transform = 'translateY(20px)';
+
+  setTimeout(() => {
+    ball.style.opacity = '1';
+    ball.style.transform = 'translateY(0)';
+  }, 500);
+
+  // Handle logo click
+  const ballContent = ball.querySelector('.minimax-ball-content');
+  ballContent.addEventListener('click', function (e) {
+    e.stopPropagation();
+    window.open('https://agent.minimax.io/', '_blank');
+    ball.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+      ball.style.transform = 'scale(1)';
+    }, 100);
+  });
+
+  // Handle close button click
+  const closeIcon = ball.querySelector('.minimax-close-icon');
+  closeIcon.addEventListener('click', function (e) {
+    e.stopPropagation();
+    ball.style.opacity = '0';
+    ball.style.transform = 'translateY(20px)';
+
+    setTimeout(() => {
+      ball.style.display = 'none';
+    }, 300);
+  });
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', initFloatingBall); 
+</script>
+</body>
+</html>
