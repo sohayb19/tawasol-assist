@@ -148,16 +148,16 @@
       </button>
       <div class="flex items-center gap-2 pr-2 relative">
         <button id="userMenuBtn" onclick="toggleUserMenu()" class="flex items-center gap-2 hover:bg-slate-50 rounded-lg pr-1 pl-2 py-1">
-          <div class="w-9 h-9 rounded-full gradient-purple text-white grid place-items-center font-bold">د.ت</div>
+          <div class="w-9 h-9 rounded-full gradient-purple text-white grid place-items-center font-bold">د.ح</div>
           <div class="hidden md:block text-right">
-            <p class="text-sm font-semibold leading-tight" id="headerUserName">د. تومي كريمة</p>
+            <p class="text-sm font-semibold leading-tight" id="headerUserName">د. حسن</p>
             <p class="text-xs text-slate-500" id="headerUserRole">أخصائي نطق</p>
           </div>
           <span class="text-slate-400 hidden md:inline">▾</span>
         </button>
         <div id="userMenu" class="hidden absolute top-full mt-2 left-0 bg-white border border-slate-200 rounded-xl shadow-xl w-64 p-2 z-50 text-right">
           <div class="p-3 border-b border-slate-100">
-            <p class="font-bold text-sm" id="menuUserName">د. تومي كريمة</p>
+            <p class="font-bold text-sm" id="menuUserName">د. حسن</p>
             <p class="text-xs text-slate-500" id="menuUserEmail">tommy.karima@tawasol.app</p>
             <p class="text-xs text-teal-600 mt-1" id="menuProvider">مسجّل عبر: Email</p>
           </div>
@@ -601,7 +601,7 @@ function renderAuth(){
         <form id="authForm" onsubmit="event.preventDefault(); submitAuth();" class="space-y-3">
           <div id="nameField" class="hidden">
             <label class="text-sm font-semibold text-slate-700">الاسم الكامل</label>
-            <input id="authName" type="text" placeholder="د. تومي كريمة" class="w-full mt-1 px-3 py-2.5 rounded-lg border border-slate-200 focus:border-teal-500 outline-none bg-white"/>
+            <input id="authName" type="text" placeholder="د. حسن" class="w-full mt-1 px-3 py-2.5 rounded-lg border border-slate-200 focus:border-teal-500 outline-none bg-white"/>
           </div>
           <div>
             <label class="text-sm font-semibold text-slate-700">البريد الإلكتروني</label>
@@ -672,8 +672,8 @@ function submitAuth(){
 }
 function loginWithProvider(provider){
   State.provider = provider;
-  const demoName = provider === 'google' ? 'د. تومي كريمة (Google)' :
-                   provider === 'icloud' ? 'د. تومي كريمة (Apple)' : 'د. تومي كريمة';
+  const demoName = provider === 'google' ? 'د. حسن (Google)' :
+                   provider === 'icloud' ? 'د. حسن (Apple)' : 'د. حسن';
   State.user = {
     name: demoName,
     email: provider === 'google' ? 'tommy.karima@gmail.com' : provider === 'icloud' ? 'tommy@icloud.com' : 'tommy.karima@tawasol.app'
@@ -683,7 +683,7 @@ function loginWithProvider(provider){
 }
 function loginDemo(){
   State.provider = 'email';
-  State.user = {name:'د. تومي كريمة', email:'tommy.karima@tawasol.app'};
+  State.user = {name:'د. حسن', email:'tommy.karima@tawasol.app'};
   State.screen = 'role-select';
   render();
 }
@@ -748,7 +748,7 @@ function renderSLP() {
       <div class="flex items-center justify-between flex-wrap gap-3">
         <div>
           <p class="text-sm opacity-90">مرحبًا بعودتك</p>
-          <h2 class="text-2xl font-extrabold">د. تومي كريمة — الأخصائي الأرطفوني</h2>
+          <h2 class="text-2xl font-extrabold">د. حسن — الأخصائي الأرطفوني</h2>
           <p class="text-sm opacity-90 mt-1">لديك ${State.notifications} تنبيهات و 4 مواعيد اليوم</p>
         </div>
         <div class="flex gap-2">
@@ -2453,8 +2453,8 @@ function renderSpecialist() {
         <h3 class="font-bold text-lg mb-3 flex items-center gap-2">📥 الحالات المُحالة إليك</h3>
         <div class="space-y-2">
           ${[
-            {from:'د. تومي كريمة (SLP)', p:'سامي بن كريم — 4.5 سنوات', task:'فحص السمع', urg:false, code:'ORL-2026-048'},
-            {from:'د. تومي كريمة (SLP)', p:'آدم — 8 سنوات', task:'تخطيط الدماغ (EEG)', urg:true, code:'NEURO-2026-049'},
+            {from:'د. حسن (SLP)', p:'سامي بن كريم — 4.5 سنوات', task:'فحص السمع', urg:false, code:'ORL-2026-048'},
+            {from:'د. حسن (SLP)', p:'آدم — 8 سنوات', task:'تخطيط الدماغ (EEG)', urg:true, code:'NEURO-2026-049'},
             {from:'د. منى (SLP)', p:'فاطمة — 5 سنوات', task:'اختبار ذكاء (WISC-V)', urg:false, code:'PSY-2026-050'},
           ].map(r => `
             <div class="p-3 rounded-xl border ${r.urg?'border-rose-300 bg-rose-50':'border-slate-200'}">
@@ -2478,7 +2478,7 @@ function renderSpecialist() {
         <p class="text-sm text-slate-500 mb-3">تابع تقدم الحالات التي تشرف عليها مع الأخصائي الأرطفوني</p>
         <div class="space-y-2">
           ${[
-            {p:'سامي بن كريم', slp:'د. تومي كريمة', prog:96, sessions:5, status:'تعافٍ'},
+            {p:'سامي بن كريم', slp:'د. حسن', prog:96, sessions:5, status:'تعافٍ'},
             {p:'مريم', slp:'د. منى', prog:62, sessions:8, status:'قيد العلاج'},
           ].map(c => `
             <div class="p-3 rounded-xl border border-slate-200">
@@ -2545,7 +2545,7 @@ function attachSpecialist() {}
    =========================================================== */
 const AdminDB = {
   subscribers: [
-    { id: 'sub-001', name: 'د. تومي كريمة', email: 'tommy.karima@tawasol.app', role: 'slp', plan: 'الاحترافية', status: 'pending', joined: '2026-06-09', amount: 4900 },
+    { id: 'sub-001', name: 'د. حسن', email: 'tommy.karima@tawasol.app', role: 'slp', plan: 'الاحترافية', status: 'pending', joined: '2026-06-09', amount: 4900 },
     { id: 'sub-002', name: 'د. بن عمر ياسين', email: 'benamar@chu-oran.dz', role: 'specialist', plan: 'الاستشاري', status: 'active', joined: '2026-05-20', amount: 11900 },
     { id: 'sub-003', name: 'أم أحمد بن منصور', email: 'mounira@gmail.com', role: 'parent', plan: 'باقة 5 جلسات', status: 'active', joined: '2026-06-01', amount: 5600 },
     { id: 'sub-004', name: 'الطالب يوسف خالدي', email: 'youssef.k@univ-alger3.dz', role: 'student', plan: 'الوصول الكامل', status: 'pending', joined: '2026-06-08', amount: 3900 },
@@ -2555,7 +2555,7 @@ const AdminDB = {
     { id: 'sub-008', name: 'أبو نور بلقاسم', email: 'belkacem.f@gmail.com', role: 'parent', plan: 'اشتراك المتابعة', status: 'pending', joined: '2026-06-10', amount: 2900 },
   ],
   payments: [
-    { id: 'TXN-LMP3X1', date: '2026-06-10 16:25', user: 'د. تومي كريمة', role: 'slp', amount: 4900, method: 'CIB', status: 'success' },
+    { id: 'TXN-LMP3X1', date: '2026-06-10 16:25', user: 'د. حسن', role: 'slp', amount: 4900, method: 'CIB', status: 'success' },
     { id: 'TXN-AB7C2D', date: '2026-06-10 14:12', user: 'أم أحمد بن منصور', role: 'parent', amount: 5600, method: 'Edahabia', status: 'success' },
     { id: 'TXN-99FK0M', date: '2026-06-10 11:48', user: 'د. زهرة ميهوبي', role: 'slp', amount: 14900, method: 'CIB', status: 'success' },
     { id: 'TXN-ZQ3X7P', date: '2026-06-09 21:33', user: 'د. رضا قاسمي', role: 'specialist', amount: 5900, method: 'CIB', status: 'success' },
@@ -2674,7 +2674,7 @@ function renderAdmin() {
     <div class="card p-5">
       <h3 class="font-bold text-lg mb-3 flex items-center gap-2">⚡ نشاط آخر 24 ساعة</h3>
       <ul class="space-y-2 text-sm">
-        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span><span>تفعيل اشتراك <b>د. تومي كريمة</b> — 4,900 دج</span></li>
+        <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span><span>تفعيل اشتراك <b>د. حسن</b> — 4,900 دج</span></li>
         <li class="flex items-start gap-2"><span class="text-amber-500">⏳</span><span>طلب جديد من <b>أبو نور بلقاسم</b></span></li>
         <li class="flex items-start gap-2"><span class="text-emerald-500">✓</span><span>تحصيل من <b>د. زهرة ميهوبي</b> — 14,900 دج</span></li>
         <li class="flex items-start gap-2"><span class="text-rose-500">✕</span><span>رفض طلب <b>الطالب منال بوخريص</b></span></li>
@@ -3345,7 +3345,7 @@ function finalizePayment() {
   document.getElementById('invNumber').textContent = invNum;
   document.getElementById('invDate').textContent = dateStr;
   document.getElementById('invOrderId').textContent = orderId;
-  document.getElementById('invClientName').textContent = (window.State && State.user && State.user.name) || 'د. تومي كريمة';
+  document.getElementById('invClientName').textContent = (window.State && State.user && State.user.name) || 'د. حسن';
   document.getElementById('invClientEmail').textContent = (window.State && State.user && State.user.email) || 'tommy.karima@tawasol.app';
   document.getElementById('invClientAddress').textContent = 'الجزائر العاصمة — 16000';
   document.getElementById('invPayMethod').textContent = methodName;
@@ -3377,7 +3377,7 @@ function finalizePayment() {
     AdminDB.payments.unshift({
       id: orderId,
       date: now.toISOString().slice(0, 16).replace('T', ' '),
-      user: (window.State && State.user && State.user.name) || 'د. تومي كريمة',
+      user: (window.State && State.user && State.user.name) || 'د. حسن',
       role: Payment.role || 'slp',
       amount: Payment.amount,
       method: Payment.method === 'cib' ? 'CIB' : 'Edahabia',
