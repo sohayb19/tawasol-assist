@@ -143,6 +143,9 @@
         <span class="lang-toggle active" data-lang="ar">AR</span>
         <span class="lang-toggle" data-lang="fr">FR</span>
       </div>
+      <button id="plansBtn" onclick="openPlansModal()" title="الباقات والاشتراكات" class="relative w-9 h-9 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 grid place-items-center text-white shadow-sm hover:shadow-md transition">
+        <span class="text-lg">💎</span>
+      </button>
       <button class="relative w-9 h-9 rounded-lg bg-slate-100 hover:bg-slate-200 grid place-items-center">🔔
         <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-rose-500"></span>
       </button>
@@ -768,8 +771,6 @@ function renderSLP() {
       </div>
     </div>
   </section>
-
-  ${renderBilling()}
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
@@ -1999,7 +2000,6 @@ function openCaseMonitoring() {
    =========================================================== */
 function renderParent() {
   return `
-  ${renderBilling('parent')}
   <section class="mb-5">
     <div class="card p-5 gradient-purple text-white">
       <h2 class="text-2xl font-extrabold">مرحبًا، ولي الأمر</h2>
@@ -2311,7 +2311,6 @@ function attachParent() {
 function renderStudent() {
   if(!State.studentLogged) {
     return `
-    ${renderBilling('student')}
     <section class="max-w-md mx-auto">
       <div class="card p-6">
         <div class="text-center mb-5">
@@ -2438,7 +2437,6 @@ function attachStudent() {
    =========================================================== */
 function renderSpecialist() {
   return `
-  ${renderBilling('specialist')}
   <section class="mb-5">
     <div class="card p-5 gradient-rose text-white">
       <h2 class="text-2xl font-extrabold">🧠 فضاء الأخصائي الطبي</h2>
@@ -2921,6 +2919,25 @@ function initFloatingBall() {
 document.addEventListener('DOMContentLoaded', initFloatingBall); 
 </script>
 
+<!-- ============ PLANS MODAL (Quick Access Icon) ============ -->
+<div id="plansModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 overflow-y-auto" style="background:rgba(15,23,42,.6);backdrop-filter:blur(4px)">
+  <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[92vh] overflow-y-auto shadow-2xl scroll-fade my-8">
+    <div class="sticky top-0 bg-white border-b border-slate-200 p-4 rounded-t-2xl flex items-center justify-between z-10">
+      <div>
+        <h3 class="font-extrabold text-xl text-slate-800 flex items-center gap-2">
+          <span class="text-2xl">💎</span>
+          <span>الباقات والاشتراكات</span>
+        </h3>
+        <p class="text-xs text-slate-500 mt-0.5">ادفع بطريقة آمنة عبر النظام الجزائري: <b>CIB</b> أو <b>البطاقة الذهبية</b></p>
+      </div>
+      <button onclick="closePlansModal()" class="text-slate-400 hover:bg-slate-100 w-8 h-8 rounded-full grid place-items-center text-xl">×</button>
+    </div>
+    <div class="p-4" id="plansModalBody">
+      <!-- Content injected by openPlansModal() -->
+    </div>
+  </div>
+</div>
+
 <!-- ============ PAYMENT MODAL (CIB / EDAHABIA) ============ -->
 <div id="paymentModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" style="background:rgba(15,23,42,.6);backdrop-filter:blur(4px)">
   <div class="bg-white rounded-2xl max-w-md w-full max-h-[92vh] overflow-y-auto shadow-2xl scroll-fade">
@@ -3207,6 +3224,20 @@ const Payment = {
   pendingInvoice: null,
   invoiceCounter: 1000,
 };
+
+function openPlansModal() {
+  // Render billing content into modal body using current role
+  document.getElementById('plansModalBody').innerHTML = renderBilling(State.role);
+  const m = document.getElementById('plansModal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+}
+
+function closePlansModal() {
+  const m = document.getElementById('plansModal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+}
 
 function openPayment(planId, planName, amount, duration, role) {
   Payment.plan = { id: planId, name: planName, duration: duration };
